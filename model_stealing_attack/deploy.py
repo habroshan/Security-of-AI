@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 # Load the model with validation
 try:
-    model = tf.keras.models.load_model('target_mnist_model.keras')
+    model = tf.keras.models.load_model('models/target_mnist_model.keras')
     
     # Validate model
     sample_input = np.random.rand(1, 28, 28, 1)  # Create sample input

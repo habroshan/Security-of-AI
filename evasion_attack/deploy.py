@@ -37,10 +37,10 @@ def load_model():
     global MODEL, MODEL_INFO, CLASS_NAMES
     
     print("Loading model...")
-    MODEL = tf.keras.models.load_model('saved_model/mnist_cnn_model.h5')
+    MODEL = tf.keras.models.load_model('models/mnist_cnn_model.h5')
     
     print("Loading model information...")
-    with open('saved_model/model_info.pkl', 'rb') as f:
+    with open('models/model_info.pkl', 'rb') as f:
         MODEL_INFO = pickle.load(f)
     
     CLASS_NAMES = MODEL_INFO['class_names']
