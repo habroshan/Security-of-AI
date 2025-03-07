@@ -1,0 +1,101 @@
+name,email,position,department,company,company_domain,interests,social_media,age_group,tech_savviness,security_awareness,susceptibility_score
+Emily Smith,emily.smith@pinnacle-sys.com,COO,Executive,Pinnacle Systems,pinnacle-sys.com,"marketing, social media, advertising","LinkedIn, Facebook",18-30,6.36,5.13,4.06
+Lisa Smith,lisa.smith@primetech.com,Chairman,Executive,Prime Technologies,primetech.com,"sales, customer relations, negotiation","LinkedIn, Twitter, Facebook",61+,6.36,8.24,1.0
+Sarah Thomas,sarah.thomas@infinite-soft.com,Controller,Finance,Infinite Software,infinite-soft.com,"human resources, recruitment, training",Facebook only,18-30,3.46,2.48,8.21
+William Johnson,william.johnson@venture-partners.com,Marketing Manager,Marketing,Venture Partners,venture-partners.com,"sales, customer relations, negotiation","LinkedIn, Facebook",46-60,7.15,5.09,5.63
+Robert Williams,robert.williams@acme.com,President,Executive,Acme Inc,acme.com,"finance, investments, accounting","LinkedIn, Twitter, Facebook",18-30,5.52,6.81,3.85
+Sarah Anderson,sarah.anderson@infinite-soft.com,President,Executive,Infinite Software,infinite-soft.com,"finance, investments, accounting","LinkedIn, Facebook, Instagram",31-45,6.14,5.98,3.95
+William Garcia,william.garcia@infinite-soft.com,System Engineer,IT,Infinite Software,infinite-soft.com,"technology, cybersecurity, cloud computing",Facebook only,61+,7.8,6.84,4.04
+James Davis,james.davis@venture-partners.com,Benefits Administrator,HR,Venture Partners,venture-partners.com,"marketing, social media, advertising",LinkedIn only,31-45,4.23,4.81,4.72
+Linda Taylor,linda.taylor@infinite-soft.com,CTO,Executive,Infinite Software,infinite-soft.com,"design, UX/UI, creative","LinkedIn, Twitter, Instagram",18-30,7.02,8.44,1.0
+Sarah Thomas,sarah.thomas@eliteserv.com,Database Administrator,IT,Elite Services,eliteserv.com,"sales, customer relations, negotiation","LinkedIn, Facebook, Instagram",61+,8.59,9.88,1.0
+John Brown,john.brown@primetech.com,Accounts Receivable,Finance,Prime Technologies,primetech.com,"finance, investments, accounting",LinkedIn only,61+,3.79,2.02,8.43
+William Miller,william.miller@primetech.com,IT Director,IT,Prime Technologies,primetech.com,"design, UX/UI, creative","LinkedIn, Facebook, Instagram",31-45,7.46,9.05,1.03
+John Martinez,john.martinez@venture-partners.com,Security Analyst,IT,Venture Partners,venture-partners.com,"data science, analytics, big data",LinkedIn only,31-45,7.17,9.51,1.38
+Michael Jackson,michael.jackson@techsolutions.com,Marketing Analyst,Marketing,Tech Solutions,techsolutions.com,"marketing, social media, advertising","Twitter, Instagram",61+,7.73,2.83,7.23
+Linda Davis,linda.davis@primetech.com,President,Executive,Prime Technologies,primetech.com,"sales, customer relations, negotiation",Facebook only,61+,7.6,6.81,2.69
+Michael Martinez,michael.martinez@acme.com,SEO Specialist,Marketing,Acme Inc,acme.com,"human resources, recruitment, training","LinkedIn, Facebook, Instagram",31-45,3.04,5.54,3.58
+Michael Johnson,michael.johnson@infinite-soft.com,System Engineer,IT,Infinite Software,infinite-soft.com,"business strategy, leadership, management","LinkedIn, Twitter, Instagram",31-45,8.62,8.89,1.87
+Patricia Garcia,patricia.garcia@venture-partners.com,Talent Acquisition,HR,Venture Partners,venture-partners.com,"finance, investments, accounting","LinkedIn, Facebook",61+,4.77,4.06,6.67
+Jane Brown,jane.brown@acme.com,HR Director,HR,Acme Inc,acme.com,"finance, investments, accounting","LinkedIn, Twitter, Facebook",31-45,3.95,4.24,5.6
+William Moore,william.moore@summitcorp.com,Cloud Architect,IT,Summit Corp,summitcorp.com,"design, UX/UI, creative","LinkedIn, Facebook",18-30,8.96,8.16,1.0
+Michael Garcia,michael.garcia@globalind.com,Benefits Administrator,HR,Global Industries,globalind.com,"project management, agile, scrum","LinkedIn, Twitter, Facebook",61+,7.51,2.82,6.18
+Thomas Rodriguez,thomas.rodriguez@venture-partners.com,Payroll Specialist,Finance,Venture Partners,venture-partners.com,"design, UX/UI, creative","LinkedIn, Twitter, Instagram",31-45,3.95,3.09,6.03
+Jane Martinez,jane.martinez@acme.com,Cloud Architect,IT,Acme Inc,acme.com,"design, UX/UI, creative",Twitter only,31-45,7.17,8.03,2.67
+Michael Williams,michael.williams@summitcorp.com,Recruiter,HR,Summit Corp,summitcorp.com,"operations, logistics, supply chain","LinkedIn, Twitter, Facebook",18-30,6.1,4.1,6.07
+James Rodriguez,james.rodriguez@summitcorp.com,Finance Manager,Finance,Summit Corp,summitcorp.com,"business strategy, leadership, management",No social media,31-45,6.36,3.5,6.13
+Michael Smith,michael.smith@venture-partners.com,SEO Specialist,Marketing,Venture Partners,venture-partners.com,"finance, investments, accounting","LinkedIn, Facebook",31-45,5.53,2.66,7.04
+Michael Garcia,michael.garcia@infinite-soft.com,Controller,Finance,Infinite Software,infinite-soft.com,"project management, agile, scrum",Twitter only,46-60,6.06,6.94,3.37
+John Wilson,john.wilson@techsolutions.com,President,Executive,Tech Solutions,techsolutions.com,"finance, investments, accounting","LinkedIn, Facebook",31-45,5.09,7.42,3.02
+Robert Rodriguez,robert.rodriguez@primetech.com,Training Coordinator,HR,Prime Technologies,primetech.com,"technology, cybersecurity, cloud computing","LinkedIn, Facebook",61+,7.15,2.22,7.45
+David Rodriguez,david.rodriguez@globalind.com,Onboarding Specialist,HR,Global Industries,globalind.com,"design, UX/UI, creative","LinkedIn, Twitter",18-30,3.38,6.42,4.39
+Jane Anderson,jane.anderson@eliteserv.com,Social Media Specialist,Marketing,Elite Services,eliteserv.com,"sales, customer relations, negotiation","Twitter, Instagram",18-30,4.54,6.49,4.1
+Jane Anderson,jane.anderson@summitcorp.com,CFO,Executive,Summit Corp,summitcorp.com,"data science, analytics, big data",Twitter only,61+,7.9,8.0,2.85
+Lisa Miller,lisa.miller@globalind.com,HR Manager,HR,Global Industries,globalind.com,"marketing, social media, advertising",Facebook only,61+,7.01,6.32,4.3
+William Miller,william.miller@techsolutions.com,HR Manager,HR,Tech Solutions,techsolutions.com,"project management, agile, scrum","LinkedIn, Twitter, Facebook",31-45,7.08,4.3,5.31
+Lisa Garcia,lisa.garcia@acme.com,Director,Executive,Acme Inc,acme.com,"data science, analytics, big data",LinkedIn only,18-30,7.87,6.12,4.17
+Thomas Martinez,thomas.martinez@acme.com,IT Director,IT,Acme Inc,acme.com,"marketing, social media, advertising","LinkedIn, Facebook, Instagram",46-60,7.11,8.39,1.31
+James Thomas,james.thomas@eliteserv.com,Marketing Manager,Marketing,Elite Services,eliteserv.com,"sales, customer relations, negotiation","LinkedIn, Facebook, Instagram",31-45,4.27,5.54,3.46
+Robert Anderson,robert.anderson@apexconsult.com,Security Officer,IT,Apex Consulting,apexconsult.com,"operations, logistics, supply chain",Facebook only,18-30,9.16,7.2,2.42
+Linda Martinez,linda.martinez@apexconsult.com,Controller,Finance,Apex Consulting,apexconsult.com,"human resources, recruitment, training",No social media,61+,6.39,6.51,3.72
+Jennifer Taylor,jennifer.taylor@primetech.com,IT Director,IT,Prime Technologies,primetech.com,"business strategy, leadership, management","LinkedIn, Twitter, Facebook",61+,9.36,8.43,1.22
+Daniel Moore,daniel.moore@summitcorp.com,Content Writer,Marketing,Summit Corp,summitcorp.com,"marketing, social media, advertising","LinkedIn, Facebook",46-60,5.58,5.16,4.51
+Lisa Wilson,lisa.wilson@summitcorp.com,CTO,Executive,Summit Corp,summitcorp.com,"technology, cybersecurity, cloud computing","LinkedIn, Twitter",31-45,7.94,7.45,3.09
+Daniel Thomas,daniel.thomas@eliteserv.com,Director,Executive,Elite Services,eliteserv.com,"project management, agile, scrum",No social media,31-45,4.59,7.75,3.03
+Emily Thomas,emily.thomas@summitcorp.com,Chairman,Executive,Summit Corp,summitcorp.com,"project management, agile, scrum","LinkedIn, Twitter",31-45,7.67,5.49,3.78
+Daniel Martinez,daniel.martinez@venture-partners.com,Marketing Analyst,Marketing,Venture Partners,venture-partners.com,"design, UX/UI, creative",No social media,61+,7.49,5.72,4.23
+William Garcia,william.garcia@pinnacle-sys.com,Content Writer,Marketing,Pinnacle Systems,pinnacle-sys.com,"human resources, recruitment, training",LinkedIn only,61+,3.39,3.43,6.11
+James Williams,james.williams@globalind.com,COO,Executive,Global Industries,globalind.com,"sales, customer relations, negotiation","Twitter, Instagram",31-45,4.26,6.63,3.45
+Linda Johnson,linda.johnson@summitcorp.com,Onboarding Specialist,HR,Summit Corp,summitcorp.com,"operations, logistics, supply chain","LinkedIn, Twitter",61+,5.38,6.71,2.88
+Thomas Thomas,thomas.thomas@primetech.com,Marketing Analyst,Marketing,Prime Technologies,primetech.com,"operations, logistics, supply chain","LinkedIn, Twitter, Facebook",61+,4.1,4.18,4.88
+James Taylor,james.taylor@globalind.com,HR Specialist,HR,Global Industries,globalind.com,"operations, logistics, supply chain",Twitter only,18-30,7.53,4.96,5.37
+Michael Thomas,michael.thomas@globalind.com,HR Specialist,HR,Global Industries,globalind.com,"technology, cybersecurity, cloud computing",LinkedIn only,61+,4.64,4.27,5.4
+Thomas Rodriguez,thomas.rodriguez@apexconsult.com,Financial Analyst,Finance,Apex Consulting,apexconsult.com,"project management, agile, scrum","LinkedIn, Twitter",18-30,8.0,3.75,6.55
+Jane Smith,jane.smith@summitcorp.com,CEO,Executive,Summit Corp,summitcorp.com,"operations, logistics, supply chain","Twitter, Instagram",31-45,4.5,7.68,2.45
+Robert Moore,robert.moore@pinnacle-sys.com,Controller,Finance,Pinnacle Systems,pinnacle-sys.com,"operations, logistics, supply chain","LinkedIn, Facebook, Instagram",18-30,6.89,2.82,6.8
+John Wilson,john.wilson@eliteserv.com,Onboarding Specialist,HR,Elite Services,eliteserv.com,"human resources, recruitment, training","LinkedIn, Facebook",31-45,3.51,5.86,4.84
+Emily Johnson,emily.johnson@infinite-soft.com,Content Writer,Marketing,Infinite Software,infinite-soft.com,"data science, analytics, big data","LinkedIn, Facebook",46-60,3.06,4.1,5.88
+Linda Anderson,linda.anderson@venture-partners.com,Director,Executive,Venture Partners,venture-partners.com,"marketing, social media, advertising",Twitter only,46-60,6.46,8.68,1.87
+Daniel Thomas,daniel.thomas@eliteserv.com,Accounts Receivable,Finance,Elite Services,eliteserv.com,"human resources, recruitment, training","LinkedIn, Facebook",46-60,7.41,3.22,6.71
+Thomas Martinez,thomas.martinez@acme.com,HR Director,HR,Acme Inc,acme.com,"marketing, social media, advertising","LinkedIn, Twitter, Instagram",31-45,4.77,3.29,6.27
+William Smith,william.smith@primetech.com,CFO,Executive,Prime Technologies,primetech.com,"human resources, recruitment, training",No social media,61+,6.22,5.96,3.99
+Patricia Moore,patricia.moore@acme.com,IT Director,IT,Acme Inc,acme.com,"human resources, recruitment, training",No social media,31-45,7.92,8.33,1.62
+Maria Thomas,maria.thomas@primetech.com,Accounts Receivable,Finance,Prime Technologies,primetech.com,"project management, agile, scrum",LinkedIn only,46-60,4.26,2.6,6.78
+Emily Miller,emily.miller@summitcorp.com,Executive Assistant,Executive,Summit Corp,summitcorp.com,"business strategy, leadership, management","LinkedIn, Facebook, Instagram",46-60,7.92,8.33,1.26
+Maria Miller,maria.miller@pinnacle-sys.com,Network Administrator,IT,Pinnacle Systems,pinnacle-sys.com,"business strategy, leadership, management","LinkedIn, Twitter",18-30,8.66,8.79,1.0
+Patricia Brown,patricia.brown@acme.com,Marketing Director,Marketing,Acme Inc,acme.com,"project management, agile, scrum","LinkedIn, Twitter, Instagram",61+,4.7,6.83,2.68
+Patricia Brown,patricia.brown@techsolutions.com,Benefits Administrator,HR,Tech Solutions,techsolutions.com,"finance, investments, accounting","LinkedIn, Facebook, Instagram",18-30,3.76,6.06,4.84
+Michael Garcia,michael.garcia@techsolutions.com,Marketing Analyst,Marketing,Tech Solutions,techsolutions.com,"sales, customer relations, negotiation","LinkedIn, Facebook, Instagram",31-45,6.88,3.9,6.92
+Jennifer Thomas,jennifer.thomas@pinnacle-sys.com,SEO Specialist,Marketing,Pinnacle Systems,pinnacle-sys.com,"technology, cybersecurity, cloud computing","LinkedIn, Facebook, Instagram",18-30,7.74,3.04,6.38
+Michael Miller,michael.miller@summitcorp.com,Chairman,Executive,Summit Corp,summitcorp.com,"finance, investments, accounting","Twitter, Instagram",18-30,5.63,7.76,2.18
+Jane Garcia,jane.garcia@pinnacle-sys.com,Bookkeeper,Finance,Pinnacle Systems,pinnacle-sys.com,"finance, investments, accounting","LinkedIn, Twitter, Facebook",46-60,6.94,5.13,5.2
+Robert Thomas,robert.thomas@techsolutions.com,Social Media Specialist,Marketing,Tech Solutions,techsolutions.com,"marketing, social media, advertising",LinkedIn only,31-45,3.36,2.83,6.79
+Jennifer Moore,jennifer.moore@techsolutions.com,Training Coordinator,HR,Tech Solutions,techsolutions.com,"sales, customer relations, negotiation",LinkedIn only,61+,5.19,4.99,5.79
+James Rodriguez,james.rodriguez@acme.com,System Engineer,IT,Acme Inc,acme.com,"operations, logistics, supply chain","LinkedIn, Facebook, Instagram",18-30,10.0,8.69,1.0
+Jane Miller,jane.miller@venture-partners.com,Brand Manager,Marketing,Venture Partners,venture-partners.com,"project management, agile, scrum",LinkedIn only,31-45,7.98,4.18,6.45
+Michael Jackson,michael.jackson@infinite-soft.com,HR Director,HR,Infinite Software,infinite-soft.com,"data science, analytics, big data","LinkedIn, Facebook",31-45,4.65,5.47,4.11
+Thomas Johnson,thomas.johnson@venture-partners.com,Security Officer,IT,Venture Partners,venture-partners.com,"business strategy, leadership, management",Facebook only,18-30,9.91,7.62,2.41
+John Moore,john.moore@apexconsult.com,System Engineer,IT,Apex Consulting,apexconsult.com,"design, UX/UI, creative",Facebook only,61+,8.88,9.04,1.0
+David Wilson,david.wilson@venture-partners.com,Recruiter,HR,Venture Partners,venture-partners.com,"technology, cybersecurity, cloud computing","LinkedIn, Facebook, Instagram",31-45,6.55,3.55,5.47
+Linda Williams,linda.williams@summitcorp.com,Cloud Architect,IT,Summit Corp,summitcorp.com,"finance, investments, accounting","Twitter, Instagram",61+,9.8,7.17,3.24
+Linda Jackson,linda.jackson@venture-partners.com,Executive Assistant,Executive,Venture Partners,venture-partners.com,"design, UX/UI, creative","Twitter, Instagram",61+,4.76,7.4,3.1
+David Williams,david.williams@pinnacle-sys.com,HR Director,HR,Pinnacle Systems,pinnacle-sys.com,"design, UX/UI, creative",LinkedIn only,18-30,4.41,3.49,6.68
+Patricia Jones,patricia.jones@venture-partners.com,Content Writer,Marketing,Venture Partners,venture-partners.com,"data science, analytics, big data",Facebook only,61+,5.28,3.61,5.77
+Lisa Taylor,lisa.taylor@summitcorp.com,HR Manager,HR,Summit Corp,summitcorp.com,"data science, analytics, big data","LinkedIn, Twitter, Instagram",61+,4.93,5.32,5.32
+David Jackson,david.jackson@acme.com,Chairman,Executive,Acme Inc,acme.com,"operations, logistics, supply chain",Facebook only,18-30,7.5,6.76,3.29
+Daniel Smith,daniel.smith@globalind.com,HR Specialist,HR,Global Industries,globalind.com,"finance, investments, accounting","LinkedIn, Twitter, Instagram",46-60,4.69,5.46,4.84
+James Taylor,james.taylor@infinite-soft.com,HR Manager,HR,Infinite Software,infinite-soft.com,"operations, logistics, supply chain","LinkedIn, Facebook",31-45,6.16,6.6,4.39
+Michael Thomas,michael.thomas@techsolutions.com,Cloud Architect,IT,Tech Solutions,techsolutions.com,"marketing, social media, advertising",LinkedIn only,18-30,7.14,9.18,1.0
+Maria Thomas,maria.thomas@globalind.com,Chairman,Executive,Global Industries,globalind.com,"sales, customer relations, negotiation","LinkedIn, Facebook, Instagram",31-45,4.68,5.32,5.43
+Lisa Jackson,lisa.jackson@eliteserv.com,COO,Executive,Elite Services,eliteserv.com,"project management, agile, scrum",LinkedIn only,61+,5.02,5.04,5.57
+Jennifer Miller,jennifer.miller@techsolutions.com,HR Director,HR,Tech Solutions,techsolutions.com,"operations, logistics, supply chain",LinkedIn only,61+,6.45,4.28,5.32
+Thomas Jackson,thomas.jackson@techsolutions.com,Director,Executive,Tech Solutions,techsolutions.com,"operations, logistics, supply chain",Facebook only,46-60,7.97,6.18,4.77
+Thomas Rodriguez,thomas.rodriguez@acme.com,Marketing Analyst,Marketing,Acme Inc,acme.com,"technology, cybersecurity, cloud computing","LinkedIn, Facebook, Instagram",61+,7.16,6.51,4.04
+Lisa Anderson,lisa.anderson@summitcorp.com,Board Member,Executive,Summit Corp,summitcorp.com,"business strategy, leadership, management","Twitter, Instagram",18-30,7.61,7.59,2.03
+Daniel Johnson,daniel.johnson@eliteserv.com,Controller,Finance,Elite Services,eliteserv.com,"finance, investments, accounting",LinkedIn only,46-60,6.74,2.88,6.39
+Maria Rodriguez,maria.rodriguez@globalind.com,Bookkeeper,Finance,Global Industries,globalind.com,"business strategy, leadership, management",Facebook only,18-30,5.34,2.38,8.13
+Lisa Taylor,lisa.taylor@primetech.com,Financial Analyst,Finance,Prime Technologies,primetech.com,"sales, customer relations, negotiation","LinkedIn, Twitter",46-60,5.68,4.27,6.07
+William Taylor,william.taylor@infinite-soft.com,System Engineer,IT,Infinite Software,infinite-soft.com,"project management, agile, scrum","LinkedIn, Twitter",46-60,9.75,6.89,2.24
+Daniel Wilson,daniel.wilson@apexconsult.com,Network Administrator,IT,Apex Consulting,apexconsult.com,"technology, cybersecurity, cloud computing","LinkedIn, Twitter",46-60,9.99,6.46,3.01
+David Taylor,david.taylor@venture-partners.com,Payroll Specialist,Finance,Venture Partners,venture-partners.com,"operations, logistics, supply chain","Twitter, Instagram",61+,6.27,6.17,4.06
+William Johnson,william.johnson@infinite-soft.com,Executive Assistant,Executive,Infinite Software,infinite-soft.com,"project management, agile, scrum","LinkedIn, Twitter, Facebook",46-60,4.4,7.74,2.35

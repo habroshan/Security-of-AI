@@ -1,0 +1,177 @@
+[
+  {
+    "subject": "Security Alert: Unusual Account Activity Detected",
+    "content": "\n            <p>Dear {{name}},</p>\n            <p>Our security system has detected unusual login activity on your account. To ensure your account remains secure, please verify your identity by clicking the link below:</p>\n            <p><a href=\"{{reset_link}}\">Verify Account Now</a></p>\n            <p>If you did not attempt to access your account, please reset your password immediately.</p>\n            <p>Thank you,<br>{{company}} Security Team</p>\n            ",
+    "type": "security"
+  },
+  {
+    "subject": "Security Alert: Unusual Account Activity Detected",
+    "content": "\n            <p>Dear {{name}},</p>\n            <p>We have detected multiple failed login attempts to your {{company}} account. For security purposes, we need to verify your identity.</p>\n            <p>Please click <a href=\"{{reset_link}}\">here</a> to confirm your account details and restore full access to your account.</p>\n            <p>This is an automated message. Please do not reply.</p>\n            <p>Regards,<br>Account Security</p>\n            ",
+    "type": "security"
+  },
+  {
+    "subject": "Security Alert: Unusual Account Activity Detected",
+    "content": "\n            <p>Dear {{name}},</p>\n            <p>As part of our ongoing security measures, we regularly verify account activity. We've noticed some unusual patterns in your recent account usage.</p>\n            <p>To continue using your account without interruption, please <a href=\"{{reset_link}}\">confirm your account details</a> within 24 hours.</p>\n            <p>If you have any questions, please contact support.</p>\n            <p>{{company}} Security</p>\n            ",
+    "type": "security"
+  },
+  {
+    "subject": "Action Required: Security Notification for Your Account",
+    "content": "\n            <p>Dear {{name}},</p>\n            <p>Our security system has detected unusual login activity on your account. To ensure your account remains secure, please verify your identity by clicking the link below:</p>\n            <p><a href=\"{{reset_link}}\">Verify Account Now</a></p>\n            <p>If you did not attempt to access your account, please reset your password immediately.</p>\n            <p>Thank you,<br>{{company}} Security Team</p>\n            ",
+    "type": "security"
+  },
+  {
+    "subject": "Action Required: Security Notification for Your Account",
+    "content": "\n            <p>Dear {{name}},</p>\n            <p>We have detected multiple failed login attempts to your {{company}} account. For security purposes, we need to verify your identity.</p>\n            <p>Please click <a href=\"{{reset_link}}\">here</a> to confirm your account details and restore full access to your account.</p>\n            <p>This is an automated message. Please do not reply.</p>\n            <p>Regards,<br>Account Security</p>\n            ",
+    "type": "security"
+  },
+  {
+    "subject": "Action Required: Security Notification for Your Account",
+    "content": "\n            <p>Dear {{name}},</p>\n            <p>As part of our ongoing security measures, we regularly verify account activity. We've noticed some unusual patterns in your recent account usage.</p>\n            <p>To continue using your account without interruption, please <a href=\"{{reset_link}}\">confirm your account details</a> within 24 hours.</p>\n            <p>If you have any questions, please contact support.</p>\n            <p>{{company}} Security</p>\n            ",
+    "type": "security"
+  },
+  {
+    "subject": "URGENT: Security Alert for Your {{company}} Account",
+    "content": "\n            <p>Dear {{name}},</p>\n            <p>Our security system has detected unusual login activity on your account. To ensure your account remains secure, please verify your identity by clicking the link below:</p>\n            <p><a href=\"{{reset_link}}\">Verify Account Now</a></p>\n            <p>If you did not attempt to access your account, please reset your password immediately.</p>\n            <p>Thank you,<br>{{company}} Security Team</p>\n            ",
+    "type": "security"
+  },
+  {
+    "subject": "URGENT: Security Alert for Your {{company}} Account",
+    "content": "\n            <p>Dear {{name}},</p>\n            <p>We have detected multiple failed login attempts to your {{company}} account. For security purposes, we need to verify your identity.</p>\n            <p>Please click <a href=\"{{reset_link}}\">here</a> to confirm your account details and restore full access to your account.</p>\n            <p>This is an automated message. Please do not reply.</p>\n            <p>Regards,<br>Account Security</p>\n            ",
+    "type": "security"
+  },
+  {
+    "subject": "URGENT: Security Alert for Your {{company}} Account",
+    "content": "\n            <p>Dear {{name}},</p>\n            <p>As part of our ongoing security measures, we regularly verify account activity. We've noticed some unusual patterns in your recent account usage.</p>\n            <p>To continue using your account without interruption, please <a href=\"{{reset_link}}\">confirm your account details</a> within 24 hours.</p>\n            <p>If you have any questions, please contact support.</p>\n            <p>{{company}} Security</p>\n            ",
+    "type": "security"
+  },
+  {
+    "subject": "Security Warning: Immediate Action Required",
+    "content": "\n            <p>Dear {{name}},</p>\n            <p>Our security system has detected unusual login activity on your account. To ensure your account remains secure, please verify your identity by clicking the link below:</p>\n            <p><a href=\"{{reset_link}}\">Verify Account Now</a></p>\n            <p>If you did not attempt to access your account, please reset your password immediately.</p>\n            <p>Thank you,<br>{{company}} Security Team</p>\n            ",
+    "type": "security"
+  },
+  {
+    "subject": "Security Warning: Immediate Action Required",
+    "content": "\n            <p>Dear {{name}},</p>\n            <p>We have detected multiple failed login attempts to your {{company}} account. For security purposes, we need to verify your identity.</p>\n            <p>Please click <a href=\"{{reset_link}}\">here</a> to confirm your account details and restore full access to your account.</p>\n            <p>This is an automated message. Please do not reply.</p>\n            <p>Regards,<br>Account Security</p>\n            ",
+    "type": "security"
+  },
+  {
+    "subject": "Security Warning: Immediate Action Required",
+    "content": "\n            <p>Dear {{name}},</p>\n            <p>As part of our ongoing security measures, we regularly verify account activity. We've noticed some unusual patterns in your recent account usage.</p>\n            <p>To continue using your account without interruption, please <a href=\"{{reset_link}}\">confirm your account details</a> within 24 hours.</p>\n            <p>If you have any questions, please contact support.</p>\n            <p>{{company}} Security</p>\n            ",
+    "type": "security"
+  },
+  {
+    "subject": "Your {{company}} Account: Security Verification Needed",
+    "content": "\n            <p>Dear {{name}},</p>\n            <p>Our security system has detected unusual login activity on your account. To ensure your account remains secure, please verify your identity by clicking the link below:</p>\n            <p><a href=\"{{reset_link}}\">Verify Account Now</a></p>\n            <p>If you did not attempt to access your account, please reset your password immediately.</p>\n            <p>Thank you,<br>{{company}} Security Team</p>\n            ",
+    "type": "security"
+  },
+  {
+    "subject": "Your {{company}} Account: Security Verification Needed",
+    "content": "\n            <p>Dear {{name}},</p>\n            <p>We have detected multiple failed login attempts to your {{company}} account. For security purposes, we need to verify your identity.</p>\n            <p>Please click <a href=\"{{reset_link}}\">here</a> to confirm your account details and restore full access to your account.</p>\n            <p>This is an automated message. Please do not reply.</p>\n            <p>Regards,<br>Account Security</p>\n            ",
+    "type": "security"
+  },
+  {
+    "subject": "Your {{company}} Account: Security Verification Needed",
+    "content": "\n            <p>Dear {{name}},</p>\n            <p>As part of our ongoing security measures, we regularly verify account activity. We've noticed some unusual patterns in your recent account usage.</p>\n            <p>To continue using your account without interruption, please <a href=\"{{reset_link}}\">confirm your account details</a> within 24 hours.</p>\n            <p>If you have any questions, please contact support.</p>\n            <p>{{company}} Security</p>\n            ",
+    "type": "security"
+  },
+  {
+    "subject": "{{sender_name}} shared a document with you: {{document_name}}",
+    "content": "\n            <p>Hi {{name}},</p>\n            <p>{{sender_name}} ({{sender_email}}) has shared a document with you: <strong>{{document_name}}</strong></p>\n            <p>You can access the document by clicking <a href=\"{{reset_link}}\">here</a>.</p>\n            <p>The document will be available for 7 days.</p>\n            <p>Regards,<br>{{company}} Document Sharing</p>\n            ",
+    "type": "document"
+  },
+  {
+    "subject": "{{sender_name}} shared a document with you: {{document_name}}",
+    "content": "\n            <p>Hello {{name}},</p>\n            <p>A new document has been shared with you by {{sender_name}}.</p>\n            <p><strong>Document:</strong> {{document_name}}<br>\n            <strong>Shared on:</strong> {{shared_date}}<br>\n            <strong>Message:</strong> \"Please review this as soon as possible.\"</p>\n            <p><a href=\"{{reset_link}}\">View Document</a></p>\n            <p>Thank you,<br>{{company}} Team</p>\n            ",
+    "type": "document"
+  },
+  {
+    "subject": "New shared document: {{document_name}}",
+    "content": "\n            <p>Hi {{name}},</p>\n            <p>{{sender_name}} ({{sender_email}}) has shared a document with you: <strong>{{document_name}}</strong></p>\n            <p>You can access the document by clicking <a href=\"{{reset_link}}\">here</a>.</p>\n            <p>The document will be available for 7 days.</p>\n            <p>Regards,<br>{{company}} Document Sharing</p>\n            ",
+    "type": "document"
+  },
+  {
+    "subject": "New shared document: {{document_name}}",
+    "content": "\n            <p>Hello {{name}},</p>\n            <p>A new document has been shared with you by {{sender_name}}.</p>\n            <p><strong>Document:</strong> {{document_name}}<br>\n            <strong>Shared on:</strong> {{shared_date}}<br>\n            <strong>Message:</strong> \"Please review this as soon as possible.\"</p>\n            <p><a href=\"{{reset_link}}\">View Document</a></p>\n            <p>Thank you,<br>{{company}} Team</p>\n            ",
+    "type": "document"
+  },
+  {
+    "subject": "Document shared with you from {{sender_name}}",
+    "content": "\n            <p>Hi {{name}},</p>\n            <p>{{sender_name}} ({{sender_email}}) has shared a document with you: <strong>{{document_name}}</strong></p>\n            <p>You can access the document by clicking <a href=\"{{reset_link}}\">here</a>.</p>\n            <p>The document will be available for 7 days.</p>\n            <p>Regards,<br>{{company}} Document Sharing</p>\n            ",
+    "type": "document"
+  },
+  {
+    "subject": "Document shared with you from {{sender_name}}",
+    "content": "\n            <p>Hello {{name}},</p>\n            <p>A new document has been shared with you by {{sender_name}}.</p>\n            <p><strong>Document:</strong> {{document_name}}<br>\n            <strong>Shared on:</strong> {{shared_date}}<br>\n            <strong>Message:</strong> \"Please review this as soon as possible.\"</p>\n            <p><a href=\"{{reset_link}}\">View Document</a></p>\n            <p>Thank you,<br>{{company}} Team</p>\n            ",
+    "type": "document"
+  },
+  {
+    "subject": "Please review: {{document_name}}",
+    "content": "\n            <p>Hi {{name}},</p>\n            <p>{{sender_name}} ({{sender_email}}) has shared a document with you: <strong>{{document_name}}</strong></p>\n            <p>You can access the document by clicking <a href=\"{{reset_link}}\">here</a>.</p>\n            <p>The document will be available for 7 days.</p>\n            <p>Regards,<br>{{company}} Document Sharing</p>\n            ",
+    "type": "document"
+  },
+  {
+    "subject": "Please review: {{document_name}}",
+    "content": "\n            <p>Hello {{name}},</p>\n            <p>A new document has been shared with you by {{sender_name}}.</p>\n            <p><strong>Document:</strong> {{document_name}}<br>\n            <strong>Shared on:</strong> {{shared_date}}<br>\n            <strong>Message:</strong> \"Please review this as soon as possible.\"</p>\n            <p><a href=\"{{reset_link}}\">View Document</a></p>\n            <p>Thank you,<br>{{company}} Team</p>\n            ",
+    "type": "document"
+  },
+  {
+    "subject": "{{company}} document shared: {{document_name}}",
+    "content": "\n            <p>Hi {{name}},</p>\n            <p>{{sender_name}} ({{sender_email}}) has shared a document with you: <strong>{{document_name}}</strong></p>\n            <p>You can access the document by clicking <a href=\"{{reset_link}}\">here</a>.</p>\n            <p>The document will be available for 7 days.</p>\n            <p>Regards,<br>{{company}} Document Sharing</p>\n            ",
+    "type": "document"
+  },
+  {
+    "subject": "{{company}} document shared: {{document_name}}",
+    "content": "\n            <p>Hello {{name}},</p>\n            <p>A new document has been shared with you by {{sender_name}}.</p>\n            <p><strong>Document:</strong> {{document_name}}<br>\n            <strong>Shared on:</strong> {{shared_date}}<br>\n            <strong>Message:</strong> \"Please review this as soon as possible.\"</p>\n            <p><a href=\"{{reset_link}}\">View Document</a></p>\n            <p>Thank you,<br>{{company}} Team</p>\n            ",
+    "type": "document"
+  },
+  {
+    "subject": "Invoice #{{invoice_number}} from {{company}} is due",
+    "content": "\n            <p>Dear {{name}},</p>\n            <p>This is a reminder that invoice #{{invoice_number}} for services provided to {{company}} is due for payment.</p>\n            <p><strong>Amount due:</strong> ${{invoice_amount}}<br>\n            <strong>Due date:</strong> {{due_date}}</p>\n            <p>To view and pay your invoice, please <a href=\"{{reset_link}}\">click here</a>.</p>\n            <p>Thank you for your business.</p>\n            <p>Accounts Receivable<br>{{company}}</p>\n            ",
+    "type": "invoice"
+  },
+  {
+    "subject": "Invoice #{{invoice_number}} from {{company}} is due",
+    "content": "\n            <p>Dear {{name}},</p>\n            <p>Your payment of ${{invoice_amount}} for invoice #{{invoice_number}} is now overdue.</p>\n            <p>To avoid late fees, please process this payment immediately by clicking <a href=\"{{reset_link}}\">here</a>.</p>\n            <p>If you have already made this payment, please disregard this notice.</p>\n            <p>Regards,<br>Billing Department</p>\n            ",
+    "type": "invoice"
+  },
+  {
+    "subject": "Your invoice #{{invoice_number}} - Payment required",
+    "content": "\n            <p>Dear {{name}},</p>\n            <p>This is a reminder that invoice #{{invoice_number}} for services provided to {{company}} is due for payment.</p>\n            <p><strong>Amount due:</strong> ${{invoice_amount}}<br>\n            <strong>Due date:</strong> {{due_date}}</p>\n            <p>To view and pay your invoice, please <a href=\"{{reset_link}}\">click here</a>.</p>\n            <p>Thank you for your business.</p>\n            <p>Accounts Receivable<br>{{company}}</p>\n            ",
+    "type": "invoice"
+  },
+  {
+    "subject": "Your invoice #{{invoice_number}} - Payment required",
+    "content": "\n            <p>Dear {{name}},</p>\n            <p>Your payment of ${{invoice_amount}} for invoice #{{invoice_number}} is now overdue.</p>\n            <p>To avoid late fees, please process this payment immediately by clicking <a href=\"{{reset_link}}\">here</a>.</p>\n            <p>If you have already made this payment, please disregard this notice.</p>\n            <p>Regards,<br>Billing Department</p>\n            ",
+    "type": "invoice"
+  },
+  {
+    "subject": "REMINDER: Outstanding payment for invoice #{{invoice_number}}",
+    "content": "\n            <p>Dear {{name}},</p>\n            <p>This is a reminder that invoice #{{invoice_number}} for services provided to {{company}} is due for payment.</p>\n            <p><strong>Amount due:</strong> ${{invoice_amount}}<br>\n            <strong>Due date:</strong> {{due_date}}</p>\n            <p>To view and pay your invoice, please <a href=\"{{reset_link}}\">click here</a>.</p>\n            <p>Thank you for your business.</p>\n            <p>Accounts Receivable<br>{{company}}</p>\n            ",
+    "type": "invoice"
+  },
+  {
+    "subject": "REMINDER: Outstanding payment for invoice #{{invoice_number}}",
+    "content": "\n            <p>Dear {{name}},</p>\n            <p>Your payment of ${{invoice_amount}} for invoice #{{invoice_number}} is now overdue.</p>\n            <p>To avoid late fees, please process this payment immediately by clicking <a href=\"{{reset_link}}\">here</a>.</p>\n            <p>If you have already made this payment, please disregard this notice.</p>\n            <p>Regards,<br>Billing Department</p>\n            ",
+    "type": "invoice"
+  },
+  {
+    "subject": "Invoice payment notification: #{{invoice_number}}",
+    "content": "\n            <p>Dear {{name}},</p>\n            <p>This is a reminder that invoice #{{invoice_number}} for services provided to {{company}} is due for payment.</p>\n            <p><strong>Amount due:</strong> ${{invoice_amount}}<br>\n            <strong>Due date:</strong> {{due_date}}</p>\n            <p>To view and pay your invoice, please <a href=\"{{reset_link}}\">click here</a>.</p>\n            <p>Thank you for your business.</p>\n            <p>Accounts Receivable<br>{{company}}</p>\n            ",
+    "type": "invoice"
+  },
+  {
+    "subject": "Invoice payment notification: #{{invoice_number}}",
+    "content": "\n            <p>Dear {{name}},</p>\n            <p>Your payment of ${{invoice_amount}} for invoice #{{invoice_number}} is now overdue.</p>\n            <p>To avoid late fees, please process this payment immediately by clicking <a href=\"{{reset_link}}\">here</a>.</p>\n            <p>If you have already made this payment, please disregard this notice.</p>\n            <p>Regards,<br>Billing Department</p>\n            ",
+    "type": "invoice"
+  },
+  {
+    "subject": "Action required: Invoice #{{invoice_number}} payment",
+    "content": "\n            <p>Dear {{name}},</p>\n            <p>This is a reminder that invoice #{{invoice_number}} for services provided to {{company}} is due for payment.</p>\n            <p><strong>Amount due:</strong> ${{invoice_amount}}<br>\n            <strong>Due date:</strong> {{due_date}}</p>\n            <p>To view and pay your invoice, please <a href=\"{{reset_link}}\">click here</a>.</p>\n            <p>Thank you for your business.</p>\n            <p>Accounts Receivable<br>{{company}}</p>\n            ",
+    "type": "invoice"
+  },
+  {
+    "subject": "Action required: Invoice #{{invoice_number}} payment",
+    "content": "\n            <p>Dear {{name}},</p>\n            <p>Your payment of ${{invoice_amount}} for invoice #{{invoice_number}} is now overdue.</p>\n            <p>To avoid late fees, please process this payment immediately by clicking <a href=\"{{reset_link}}\">here</a>.</p>\n            <p>If you have already made this payment, please disregard this notice.</p>\n            <p>Regards,<br>Billing Department</p>\n            ",
+    "type": "invoice"
+  }
+]

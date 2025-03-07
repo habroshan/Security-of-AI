@@ -1,0 +1,91 @@
+=== TARGET ANALYSIS SAMPLE ===
+This file shows how ML algorithms extract and analyze features from target profiles
+
+TARGET: David Jackson, Chairman at Acme Inc
+Email: david.jackson@acme.com
+Department: Executive
+Interests: operations, logistics, supply chain
+Security Awareness: 6.76
+
+EXTRACTED FEATURES:
+  department_Executive: 1.0000
+  age_group_18-30: 1.0000
+  tech_savviness: 7.5000
+  security_awareness: 6.7600
+  susceptibility_score: 3.2900
+  position_tfidf_chairman: 1.0000
+  interests_tfidf_chain: 0.5000
+  interests_tfidf_logistics: 0.5000
+  interests_tfidf_operations: 0.5000
+  interests_tfidf_supply: 0.5000
+
+--------------------------------------------------
+
+TARGET: Robert Moore, Controller at Pinnacle Systems
+Email: robert.moore@pinnacle-sys.com
+Department: Finance
+Interests: operations, logistics, supply chain
+Security Awareness: 2.82
+
+EXTRACTED FEATURES:
+  department_Finance: 1.0000
+  age_group_18-30: 1.0000
+  tech_savviness: 6.8900
+  security_awareness: 2.8200
+  susceptibility_score: 6.8000
+  position_tfidf_controller: 1.0000
+  interests_tfidf_chain: 0.5000
+  interests_tfidf_logistics: 0.5000
+  interests_tfidf_operations: 0.5000
+  interests_tfidf_supply: 0.5000
+
+--------------------------------------------------
+
+TARGET: Robert Thomas, Social Media Specialist at Tech Solutions
+Email: robert.thomas@techsolutions.com
+Department: Marketing
+Interests: marketing, social media, advertising
+Security Awareness: 2.83
+
+EXTRACTED FEATURES:
+  department_Marketing: 1.0000
+  age_group_31-45: 1.0000
+  tech_savviness: 3.3600
+  security_awareness: 2.8300
+  susceptibility_score: 6.7900
+  position_tfidf_specialist: 1.0000
+
+--------------------------------------------------
+
+TARGET: William Garcia, Content Writer at Pinnacle Systems
+Email: william.garcia@pinnacle-sys.com
+Department: Marketing
+Interests: human resources, recruitment, training
+Security Awareness: 3.43
+
+EXTRACTED FEATURES:
+  department_Marketing: 1.0000
+  age_group_61+: 1.0000
+  tech_savviness: 3.3900
+  security_awareness: 3.4300
+  susceptibility_score: 6.1100
+
+--------------------------------------------------
+
+TARGET: Daniel Martinez, Marketing Analyst at Venture Partners
+Email: daniel.martinez@venture-partners.com
+Department: Marketing
+Interests: design, UX/UI, creative
+Security Awareness: 5.72
+
+EXTRACTED FEATURES:
+  department_Marketing: 1.0000
+  age_group_61+: 1.0000
+  tech_savviness: 7.4900
+  security_awareness: 5.7200
+  susceptibility_score: 4.2300
+  position_tfidf_analyst: 0.7071
+  position_tfidf_marketing: 0.7071
+
+--------------------------------------------------
+

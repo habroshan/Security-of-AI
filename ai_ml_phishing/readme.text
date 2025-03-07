@@ -1,0 +1,7 @@
+
+Train the ML models on target data:
+python ai_ml_phishing_framework.py --train-models
+Analyze a target's vulnerability:
+python ai_ml_phishing_framework.py --analyze-target --target-index 0
+Generate a phishing email using all the AI/ML components:
+python ai_ml_phishing_framework.py --generate-email --target-index 0

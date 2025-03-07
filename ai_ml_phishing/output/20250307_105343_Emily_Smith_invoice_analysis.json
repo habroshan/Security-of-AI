@@ -1,0 +1,53 @@
+{
+  "target": {
+    "name": "Emily Smith",
+    "email": "emily.smith@pinnacle-sys.com",
+    "position": "COO",
+    "department": "Executive",
+    "company": "Pinnacle Systems",
+    "company_domain": "pinnacle-sys.com",
+    "interests": "marketing, social media, advertising",
+    "social_media": "LinkedIn, Facebook",
+    "age_group": "18-30",
+    "tech_savviness": 6.36,
+    "security_awareness": 5.13,
+    "susceptibility_score": 4.06
+  },
+  "template_type": "invoice",
+  "generation_time": "2025-03-07 10:53:43",
+  "attack_analysis": {
+    "subject": "REMINDER: Outstanding payment for invoice #INV-17936",
+    "template_type": "invoice",
+    "personalization_strategies": {
+      "include_position_reference": 0.8,
+      "include_company_branding": 0.8,
+      "emphasize_urgency": 0.7
+    },
+    "phishing_url_analysis": {
+      "spoofing_technique": "Character substitution and subdomain manipulation",
+      "legitimate_appearance_score": 0.7219852695778871,
+      "detection_evasion_score": 0.8166119721267002
+    },
+    "psychological_triggers": [
+      {
+        "type": "urgency",
+        "effectiveness": 0.7263606459123795
+      },
+      {
+        "type": "authority",
+        "effectiveness": 0.8216484558433066
+      },
+      {
+        "type": "fear_of_missing_out",
+        "effectiveness": 0.8076863068907434
+      }
+    ],
+    "estimated_success_probability": 0.5355411688201769,
+    "defensive_recommendations": [
+      "Implement DMARC, SPF, and DKIM email authentication",
+      "Train users to verify suspicious requests through separate channels",
+      "Deploy anti-phishing toolbars and email security solutions",
+      "Use multi-factor authentication for sensitive accounts"
+    ]
+  }
+}
