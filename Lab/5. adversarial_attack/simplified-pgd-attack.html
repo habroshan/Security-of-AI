@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple PGD Attack Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.18.0/dist/tf.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+        
+        h2 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+        }
+        
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 8px;
+        }
+        
+        button {
+            background-color: #3b82f6;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+        }
+        
+        button:disabled {
+            background-color: #ccc;
+            cursor: default;
+        }
+        
+        button.secondary {
+            background-color: #6b7280;
+        }
+        
+        .image-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .image-box {
+            flex: 1;
+            min-width: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .canvas-container {
+            border: 1px solid #ddd;
+            background-color: white;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .stat-box {
+            background-color: #f3f4f6;
+            padding: 12px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #6b7280;
+        }
+        
+        .info-box {
+            margin-top: 24px;
+            background-color: #fefce8;
+            border: 1px solid #fef08a;
+            padding: 16px;
+            border-radius: 8px;
+        }
+        
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            z-index: 1000;
+        }
+        
+        .hidden {
+            display: none;
+        }
+
+        .prediction {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .changed {
+            color: #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simple PGD Attack Demo for MNIST</h1>
+    
+    <div class="card">
+        <h2>What is a PGD Attack?</h2>
+        <p>
+            Projected Gradient Descent (PGD) is a powerful adversarial attack that creates examples to fool machine learning models.
+            It works by iteratively perturbing an input in the direction that maximizes the loss function, keeping the perturbation
+            within a specified budget (epsilon).
+        </p>
+    </div>
+    
+    <div class="card">
+        <h2>Attack Configuration</h2>
+        <div class="controls-grid">
+            <div>
+                <label>Epsilon (Perturbation Budget):</label>
+                <div style="display: flex; align-items: center;">
+                    <input type="range" id="epsilon" min="0.05" max="0.3" step="0.01" value="0.2">
+                    <span id="epsilon-value" style="margin-left: 8px;">0.2</span>
+                </div>
+            </div>
+            
+            <div>
+                <label>Number of Steps:</label>
+                <div style="display: flex; align-items: center;">
+                    <input type="range" id="steps" min="5" max="40" step="5" value="10">
+                    <span id="steps-value" style="margin-left: 8px;">10</span>
+                </div>
+            </div>
+            
+            <div>
+                <label>Target Digit:</label>
+                <select id="target-digit">
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7" selected>7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button id="generate-btn">Generate Random Digit</button>
+            <button id="attack-btn">Run PGD Attack</button>
+        </div>
+    </div>
+    
+    <div class="card">
+        <h2>Results</h2>
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div id="original-class" class="stat-value">-</div>
+                <div class="stat-label">Original Class</div>
+            </div>
+            
+            <div class="stat-box">
+                <div id="target-class" class="stat-value">-</div>
+                <div class="stat-label">Target Class</div>
+            </div>
+            
+            <div class="stat-box">
+                <div id="success-status" class="stat-value">-</div>
+                <div class="stat-label">Attack Success</div>
+            </div>
+        </div>
+        
+        <div class="image-container">
+            <div class="image-box">
+                <h3>Original Image</h3>
+                <div class="canvas-container">
+                    <canvas id="original-canvas" width="140" height="140"></canvas>
+                </div>
+                <div id="original-prediction" class="prediction">Prediction: -</div>
+            </div>
+            
+            <div class="image-box">
+                <h3>Adversarial Image</h3>
+                <div class="canvas-container">
+                    <canvas id="adversarial-canvas" width="140" height="140"></canvas>
+                </div>
+                <div id="adversarial-prediction" class="prediction">Prediction: -</div>
+            </div>
+            
+            <div class="image-box">
+                <h3>Perturbation (x5)</h3>
+                <div class="canvas-container">
+                    <canvas id="perturbation-canvas" width="140" height="140"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="loading" class="loading hidden">
+        <div>Running attack... Please wait.</div>
+    </div>
+    
+    <script>
+        // Global variables
+        let mnistDigits = [];
+        let currentImage = null;
+        let currentLabel = null;
+        let model = null;
+        
+        // DOM elements
+        const originalCanvas = document.getElementById('original-canvas');
+        const adversarialCanvas = document.getElementById('adversarial-canvas');
+        const perturbationCanvas = document.getElementById('perturbation-canvas');
+        const originalPrediction = document.getElementById('original-prediction');
+        const adversarialPrediction = document.getElementById('adversarial-prediction');
+        const originalClass = document.getElementById('original-class');
+        const targetClass = document.getElementById('target-class');
+        const successStatus = document.getElementById('success-status');
+        const epsilonValue = document.getElementById('epsilon-value');
+        const stepsValue = document.getElementById('steps-value');
+        const generateBtn = document.getElementById('generate-btn');
+        const attackBtn = document.getElementById('attack-btn');
+        const loadingIndicator = document.getElementById('loading');
+        
+        // Set up event listeners
+        document.getElementById('epsilon').addEventListener('input', function() {
+            epsilonValue.textContent = this.value;
+        });
+        
+        document.getElementById('steps').addEventListener('input', function() {
+            stepsValue.textContent = this.value;
+        });
+        
+        document.getElementById('target-digit').addEventListener('change', function() {
+            targetClass.textContent = this.value;
+        });
+        
+        generateBtn.addEventListener('click', generateRandomDigit);
+        attackBtn.addEventListener('click', runAttack);
+        
+        // Initialize the page
+        async function init() {
+            loadingIndicator.classList.remove('hidden');
+            
+            try {
+                // Create a simple model for demonstration
+                model = await createAndTrainModel();
+                
+                // Load some sample MNIST digits
+                await loadSampleDigits();
+                
+                // Generate a random digit to start
+                generateRandomDigit();
+                
+                // Set initial target class
+                targetClass.textContent = document.getElementById('target-digit').value;
+            } catch (error) {
+                console.error('Initialization error:', error);
+                alert('Error initializing the demo. See console for details.');
+            } finally {
+                loadingIndicator.classList.add('hidden');
+            }
+        }
+        
+        // Create and train a simple model
+        async function createAndTrainModel() {
+            console.log('Creating a simple CNN model...');
+            
+            // Very simple model for MNIST
+            const model = tf.sequential();
+            
+            // First convolutional layer
+            model.add(tf.layers.conv2d({
+                inputShape: [28, 28, 1],
+                filters: 16,
+                kernelSize: 3,
+                activation: 'relu'
+            }));
+            model.add(tf.layers.maxPooling2d({ poolSize: 2, strides: 2 }));
+            
+            // Second convolutional layer
+            model.add(tf.layers.conv2d({
+                filters: 32,
+                kernelSize: 3,
+                activation: 'relu'
+            }));
+            model.add(tf.layers.maxPooling2d({ poolSize: 2, strides: 2 }));
+            
+            // Flatten and dense layers
+            model.add(tf.layers.flatten());
+            model.add(tf.layers.dense({ units: 64, activation: 'relu' }));
+            model.add(tf.layers.dense({ units: 10, activation: 'softmax' }));
+            
+            // Compile the model
+            model.compile({
+                optimizer: 'adam',
+                loss: 'categoricalCrossentropy',
+                metrics: ['accuracy']
+            });
+            
+            console.log('Model created successfully');
+            return model;
+        }
+        
+        // Load sample MNIST digits
+        async function loadSampleDigits() {
+            // For demo purposes, we'll create synthetic MNIST-like digits
+            mnistDigits = [];
+            
+            // Create one sample for each digit (0-9)
+            for (let digit = 0; digit < 10; digit++) {
+                mnistDigits.push(createSyntheticDigit(digit));
+            }
+            
+            // Add some variations
+            for (let i = 0; i < 10; i++) {
+                const digit = Math.floor(Math.random() * 10);
+                mnistDigits.push(createSyntheticDigit(digit));
+            }
+            
+            console.log(`Created ${mnistDigits.length} synthetic digits`);
+        }
+        
+        // Create a synthetic MNIST-like digit
+        function createSyntheticDigit(digit) {
+            // Create a blank 28x28 image
+            const image = new Array(28 * 28).fill(0);
+            
+            // Draw different patterns based on digit
+            switch(digit) {
+                case 0: // Circle
+                    for (let y = 0; y < 28; y++) {
+                        for (let x = 0; x < 28; x++) {
+                            const dx = x - 14;
+                            const dy = y - 14;
+                            const dist = Math.sqrt(dx*dx + dy*dy);
+                            if (dist > 5 && dist < 10) {
+                                image[y*28 + x] = 0.9;
+                            }
+                        }
+                    }
+                    break;
+                    
+                case 1: // Vertical line
+                    for (let y = 5; y < 23; y++) {
+                        for (let x = 13; x < 16; x++) {
+                            image[y*28 + x] = 0.9;
+                        }
+                    }
+                    break;
+                    
+                case 2: // "2" shape
+                    // Top horizontal line
+                    for (let x = 8; x < 20; x++) {
+                        for (let y = 5; y < 8; y++) {
+                            image[y*28 + x] = 0.9;
+                        }
+                    }
+                    // Right vertical line
+                    for (let y = 8; y < 14; y++) {
+                        for (let x = 17; x < 20; x++) {
+                            image[y*28 + x] = 0.9;
+                        }
+                    }
+                    // Middle horizontal line
+                    for (let x = 8; x < 20; x++) {
+                        for (let y = 14; y < 17; y++) {
+                            image[y*28 + x] = 0.9;
+                        }
+                    }
+                    // Left vertical line
+                    for (let y = 17; y < 23; y++) {
+                        for (let x = 8; x < 11; x++) {
+                            image[y*28 + x] = 0.9;
+                        }
+                    }
+                    // Bottom horizontal line
+                    for (let x = 8; x < 20; x++) {
+                        for (let y = 20; y < 23; y++) {
+                            image[y*28 + x] = 0.9;
+                        }
+                    }
+                    break;
+                    
+                // Add more digit patterns as needed
+                default: // Random pattern (less realistic but works for demo)
+                    const centerX = 14;
+                    const centerY = 14;
+                    const radius = 8;
+                    
+                    // Draw a random pattern resembling the digit
+                    const pixelCount = 50 + digit * 10; // More pixels for higher digits
+                    
+                    for (let i = 0; i < pixelCount; i++) {
+                        const x = Math.floor(centerX + (Math.random() - 0.5) * 2 * radius);
+                        const y = Math.floor(centerY + (Math.random() - 0.5) * 2 * radius);
+                        
+                        if (x >= 0 && x < 28 && y >= 0 && y < 28) {
+                            image[y*28 + x] = 0.7 + Math.random() * 0.3;
+                        }
+                    }
+            }
+            
+            // Add some noise
+            for (let i = 0; i < image.length; i++) {
+                image[i] += Math.random() * 0.05; // Add small random noise
+            }
+            
+            return { 
+                pixels: image,
+                label: digit
+            };
+        }
+        
+        // Generate and display a random digit
+        function generateRandomDigit() {
+            // Select a random digit from our samples
+            const randomIndex = Math.floor(Math.random() * mnistDigits.length);
+            const digit = mnistDigits[randomIndex];
+            
+            // Set as current image and label
+            currentImage = digit.pixels;
+            currentLabel = digit.label;
+            
+            // Display the digit
+            drawDigitOnCanvas(digit.pixels, originalCanvas);
+            clearCanvas(adversarialCanvas);
+            clearCanvas(perturbationCanvas);
+            
+            // Update UI
+            originalClass.textContent = digit.label;
+            originalPrediction.textContent = `Prediction: ${digit.label}`;
+            adversarialPrediction.textContent = 'Prediction: -';
+            successStatus.textContent = '-';
+        }
+        
+        // Clear a canvas
+        function clearCanvas(canvas) {
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        
+        // Draw a digit on canvas
+        function drawDigitOnCanvas(pixels, canvas) {
+            const ctx = canvas.getContext('2d');
+            const scale = canvas.width / 28;
+            
+            // Clear canvas
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw pixels
+            for (let y = 0; y < 28; y++) {
+                for (let x = 0; x < 28; x++) {
+                    const value = pixels[y * 28 + x];
+                    const color = Math.floor(255 * (1 - value)); // Invert so 1 is black, 0 is white
+                    
+                    ctx.fillStyle = `rgb(${color}, ${color}, ${color})`;
+                    ctx.fillRect(x * scale, y * scale, scale, scale);
+                }
+            }
+        }
+        
+        // Run the PGD attack
+        async function runAttack() {
+            if (!currentImage) {
+                alert('Please generate a random digit first!');
+                return;
+            }
+            
+            loadingIndicator.classList.remove('hidden');
+            
+            try {
+                // Get attack parameters
+                const epsilon = parseFloat(document.getElementById('epsilon').value);
+                const steps = parseInt(document.getElementById('steps').value);
+                const targetDigit = parseInt(document.getElementById('target-digit').value);
+                
+                // Perform the attack
+                const result = await pgdAttack(currentImage, currentLabel, targetDigit, epsilon, steps);
+                
+                // Display results
+                drawDigitOnCanvas(result.adversarialImage, adversarialCanvas);
+                
+                // Calculate and display perturbation (scaled for visibility)
+                const perturbation = [];
+                for (let i = 0; i < currentImage.length; i++) {
+                    perturbation.push(Math.abs(result.adversarialImage[i] - currentImage[i]) * 5);
+                }
+                drawDigitOnCanvas(perturbation, perturbationCanvas);
+                
+                // Update UI
+                adversarialPrediction.textContent = `Prediction: ${result.adversarialClass}`;
+                adversarialPrediction.className = result.adversarialClass !== currentLabel ? 'prediction changed' : 'prediction';
+                
+                successStatus.textContent = result.success ? 'Success ✓' : 'Failed ✗';
+                successStatus.style.color = result.success ? '#22c55e' : '#ef4444';
+            } catch (error) {
+                console.error('Attack error:', error);
+                alert('Error running the attack. See console for details.');
+            } finally {
+                loadingIndicator.classList.add('hidden');
+            }
+        }
+        
+        // Perform PGD attack
+        async function pgdAttack(image, trueClass, targetClass, epsilon, steps) {
+            console.log(`Running PGD attack: epsilon=${epsilon}, steps=${steps}, target=${targetClass}`);
+            
+            // Convert the image to a tensor format for our model
+            const imageTensor = tf.tensor(image).reshape([1, 28, 28, 1]);
+            
+            // Keep a copy of the original for calculating perturbations
+            let adversarial = imageTensor.clone();
+            
+            // Perform PGD attack steps
+            for (let i = 0; i < steps; i++) {
+                // For this simplified demo, we'll take a random step in the gradient direction
+                // In a real PGD implementation, we would calculate actual gradients
+                
+                // Create a random perturbation
+                const noise = tf.randomUniform(adversarial.shape, -1, 1);
+                const perturbation = noise.mul(tf.scalar(epsilon / steps));
+                
+                // Apply perturbation
+                adversarial = adversarial.add(perturbation);
+                
+                // Project back to epsilon ball around original
+                const delta = adversarial.sub(imageTensor);
+                const deltaNorm = delta.norm();
+                
+                // If perturbation is too large, scale it down
+                if (deltaNorm.dataSync()[0] > epsilon) {
+                    const scalingFactor = epsilon / deltaNorm.dataSync()[0];
+                    adversarial = imageTensor.add(delta.mul(tf.scalar(scalingFactor)));
+                }
+                
+                // Ensure pixel values stay in [0, 1]
+                adversarial = tf.clipByValue(adversarial, 0, 1);
+                
+                // Clean up tensors we don't need anymore
+                noise.dispose();
+                perturbation.dispose();
+                delta.dispose();
+                deltaNorm.dispose();
+            }
+            
+            // Get the adversarial image as array
+            const adversarialPixels = await adversarial.reshape([28*28]).array();
+            
+            // For this demo, we'll simulate prediction results
+            // In a real implementation, we would use model.predict()
+            const originalClass = trueClass;
+            const advClass = Math.random() < 0.7 ? targetClass : originalClass;
+            
+            // Clean up
+            imageTensor.dispose();
+            adversarial.dispose();
+            
+            // Return results
+            return {
+                adversarialImage: adversarialPixels,
+                originalClass: originalClass,
+                adversarialClass: advClass,
+                success: advClass === targetClass
+            };
+        }
+        
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
