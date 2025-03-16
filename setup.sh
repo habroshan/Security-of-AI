@@ -33,7 +33,7 @@ command_exists() {
 }
 
 # Check if script is run from the project root directory
-if [[ ! -d "Backdoor_Attack" || ! -d "Evasion_Attack" || ! -d "Lab" ]]; then
+if [[ ! -d "AI_Attacks_Material" || ! -d "AI_Driven_Attacks" || ! -d "Lab_Demonstration" ]]; then
     print_error "Error: Please run this script from the project root directory!"
     exit 1
 fi
@@ -192,10 +192,11 @@ python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords')"
 print_header "Setting up React Applications"
 
 REACT_APPS=(
-    "Lab/1. evasion_attack_demo"
-    "Lab/2. poisoning-attack-demo"
-    "Lab/3. backdoor-attack-demo"
-    "Lab/4. model-stealing-demo"
+    "Lab_Demonstration/1. evasion_attack_demo"
+    "Lab_Demonstration/2. poisoning-attack-demo"
+    "Lab_Demonstration/3. backdoor-attack-demo"
+    "Lab_Demonstration/4. model-stealing-demo"
+    "Lab_Demonstration/5. adversarial_attack"
 )
 
 for app_dir in "${REACT_APPS[@]}"; do
@@ -237,6 +238,8 @@ for app_dir in "${REACT_APPS[@]}"; do
             npm install @mui/material @mui/icons-material @emotion/react @emotion/styled three @react-three/fiber @react-three/drei axios > "../../logs/npm_deps_backdoor.log" 2>&1
         elif [[ "$base_name" == "4. model-stealing-demo" ]]; then
             npm install @mui/material @mui/icons-material @emotion/react @emotion/styled recharts axios > "../../logs/npm_deps_stealing.log" 2>&1
+        elif [[ "$base_name" == "5. adversarial_attack" ]]; then
+            npm install @mui/material @mui/icons-material @emotion/react @emotion/styled three @react-three/fiber @react-three/drei chart.js react-chartjs-2 axios > "../../logs/npm_deps_adversarial.log" 2>&1
         fi
         
         # Go back to project root
@@ -250,11 +253,13 @@ done
 print_header "Setting up Model Directories"
 
 MODEL_DIRS=(
-    "Backdoor_Attack/models"
-    "Evasion_Attack/models"
-    "Model_Stealing_Attack/models"
-    "Poisoning_Attack/models"
-    "Realizable_Attack/models"
+    "AI_Attacks_Material/Backdoor_Attack/models"
+    "AI_Attacks_Material/Evasion_Attack/models"
+    "AI_Attacks_Material/Model_Stealing_Attack/models"
+    "AI_Attacks_Material/Poisoning_Attack/models"
+    "AI_Attacks_Material/Realizable_Attack/models"
+    "AI_Driven_Attacks/AI_ML_Phishing/models"
+    "AI_Driven_Attacks/Deep_Fake_Attack/models"
 )
 
 for dir in "${MODEL_DIRS[@]}"; do
@@ -268,7 +273,7 @@ done
 print_info "Creating initialization scripts for models..."
 
 # Initialize Backdoor_Attack
-cat > Backdoor_Attack/initialize_models.py << EOL
+cat > AI_Attacks_Material/Backdoor_Attack/initialize_models.py << EOL
 import os
 import numpy as np
 import pickle
@@ -374,12 +379,12 @@ if __name__ == "__main__":
 EOL
 
 # Copy to other modules
-cp Backdoor_Attack/initialize_models.py Evasion_Attack/initialize_models.py
-cp Backdoor_Attack/initialize_models.py Poisoning_Attack/initialize_models.py
-cp Backdoor_Attack/initialize_models.py Realizable_Attack/initialize_models.py
+cp AI_Attacks_Material/Backdoor_Attack/initialize_models.py AI_Attacks_Material/Evasion_Attack/initialize_models.py
+cp AI_Attacks_Material/Backdoor_Attack/initialize_models.py AI_Attacks_Material/Poisoning_Attack/initialize_models.py
+cp AI_Attacks_Material/Backdoor_Attack/initialize_models.py AI_Attacks_Material/Realizable_Attack/initialize_models.py
 
 # Initialize Model_Stealing_Attack
-cat > Model_Stealing_Attack/initialize_models.py << EOL
+cat > AI_Attacks_Material/Model_Stealing_Attack/initialize_models.py << EOL
 import os
 import numpy as np
 import json
@@ -492,6 +497,181 @@ if __name__ == "__main__":
     initialize_model()
 EOL
 
+# Initialize scripts for AI Driven Attacks
+cat > AI_Driven_Attacks/AI_ML_Phishing/initialize_data.py << EOL
+import os
+import json
+import random
+import numpy as np
+
+def initialize_data():
+    print("Initializing data for AI-Driven Phishing module...")
+    
+    # Create necessary directories
+    os.makedirs('models', exist_ok=True)
+    os.makedirs('data', exist_ok=True)
+    os.makedirs('templates', exist_ok=True)
+    os.makedirs('templates/email', exist_ok=True)
+    os.makedirs('templates/sms', exist_ok=True)
+    
+    # Create sample email templates
+    email_templates = [
+        {
+            'name': 'password_reset',
+            'content': """
+            <html>
+            <body>
+            <h2>Important: Your Password Needs to be Reset</h2>
+            <p>Dear {{name}},</p>
+            <p>We have detected unusual activity on your account. For your security, please reset your password immediately by clicking the link below:</p>
+            <p><a href="{{reset_link}}">Reset Password</a></p>
+            <p>If you did not request this change, please contact our support team immediately.</p>
+            <p>Best regards,<br>Security Team</p>
+            </body>
+            </html>
+            """
+        },
+        {
+            'name': 'account_verification',
+            'content': """
+            <html>
+            <body>
+            <h2>Verify Your Account</h2>
+            <p>Hello {{name}},</p>
+            <p>Thank you for creating an account with us. To complete the registration process, please verify your account by clicking the link below:</p>
+            <p><a href="{{verification_link}}">Verify Account</a></p>
+            <p>This link will expire in 24 hours.</p>
+            <p>Regards,<br>Account Team</p>
+            </body>
+            </html>
+            """
+        }
+    ]
+    
+    # Save email templates
+    for template in email_templates:
+        with open(f'templates/email/{template["name"]}.html', 'w', encoding='utf-8') as f:
+            f.write(template['content'])
+    
+    # Create sample SMS templates
+    sms_templates = [
+        {
+            'name': 'package_delivery',
+            'content': "{{name}}, your package could not be delivered. Reschedule delivery here: {{tracking_link}}"
+        },
+        {
+            'name': 'bank_alert',
+            'content': "ALERT: Unusual activity detected on your {{bank_name}} account. Verify your identity here: {{verification_link}}"
+        }
+    ]
+    
+    # Save SMS templates
+    for template in sms_templates:
+        with open(f'templates/sms/{template["name"]}.txt', 'w', encoding='utf-8') as f:
+            f.write(template['content'])
+    
+    # Create sample target data
+    sample_targets = [
+        {
+            'name': 'John Smith',
+            'email': 'john.smith@example.com',
+            'phone': '555-123-4567',
+            'company': 'ABC Corp',
+            'position': 'Manager',
+            'department': 'IT',
+            'interests': 'technology, security, cloud computing'
+        },
+        {
+            'name': 'Jane Doe',
+            'email': 'jane.doe@example.com',
+            'phone': '555-234-5678',
+            'company': 'XYZ Inc',
+            'position': 'Developer',
+            'department': 'Engineering',
+            'interests': 'programming, data science, AI'
+        },
+        {
+            'name': 'Robert Johnson',
+            'email': 'robert.j@example.com',
+            'phone': '555-345-6789',
+            'company': 'Acme LLC',
+            'position': 'Analyst',
+            'department': 'Finance',
+            'interests': 'finance, analytics, reporting'
+        }
+    ]
+    
+    # Save target data
+    with open('data/sample_targets.json', 'w', encoding='utf-8') as f:
+        json.dump(sample_targets, f, indent=2)
+    
+    print("Data initialization complete!")
+
+if __name__ == "__main__":
+    initialize_data()
+EOL
+
+cat > AI_Driven_Attacks/Deep_Fake_Attack/initialize_data.py << EOL
+import os
+import numpy as np
+import json
+
+def initialize_data():
+    print("Initializing data for Deep Fake Attack module...")
+    
+    # Create necessary directories
+    os.makedirs('models', exist_ok=True)
+    os.makedirs('data', exist_ok=True)
+    os.makedirs('data/samples', exist_ok=True)
+    
+    # Create metadata file
+    metadata = {
+        'dataset_name': 'Demo DeepFake Dataset',
+        'required_models': [
+            'face_recognition',
+            'face_swap_model',
+            'deepfake_detector'
+        ],
+        'instructions': 'This is a demo dataset for educational purposes. Real models need to be downloaded separately.'
+    }
+    
+    with open('data/metadata.json', 'w', encoding='utf-8') as f:
+        json.dump(metadata, f, indent=2)
+    
+    # Create a readme
+    with open('README.md', 'w', encoding='utf-8') as f:
+        f.write("""# DeepFake Attack Module
+
+This module demonstrates DeepFake creation and detection techniques for educational purposes.
+
+## Setup
+
+1. Initialize the environment:
+   ```
+   python initialize_data.py
+   ```
+
+2. Download required models:
+   ```
+   python download_models.py
+   ```
+
+3. Run the demo:
+   ```
+   python deepfake_demo.py
+   ```
+
+## Note
+
+This is for educational purposes only. Creating and distributing DeepFakes without permission may be illegal in many jurisdictions.
+""")
+    
+    print("Data initialization complete!")
+
+if __name__ == "__main__":
+    initialize_data()
+EOL
+
 # Create a script to initialize all models
 print_info "Creating script to initialize all models..."
 cat > initialize_all_models.sh << EOL
@@ -502,33 +682,44 @@ echo "Initializing models for all modules..."
 # Activate virtual environment
 source venv/bin/activate
 
-# Initialize models for each module
+# Initialize models for each attack module
 echo "Initializing Backdoor Attack models..."
-cd Backdoor_Attack
+cd AI_Attacks_Material/Backdoor_Attack
 python initialize_models.py
-cd ..
+cd ../..
 
 echo "Initializing Evasion Attack models..."
-cd Evasion_Attack
+cd AI_Attacks_Material/Evasion_Attack
 python initialize_models.py
-cd ..
+cd ../..
 
 echo "Initializing Poisoning Attack models..."
-cd Poisoning_Attack
+cd AI_Attacks_Material/Poisoning_Attack
 python initialize_models.py
-cd ..
+cd ../..
 
 echo "Initializing Realizable Attack models..."
-cd Realizable_Attack
+cd AI_Attacks_Material/Realizable_Attack
 python initialize_models.py
-cd ..
+cd ../..
 
 echo "Initializing Model Stealing Attack models..."
-cd Model_Stealing_Attack
+cd AI_Attacks_Material/Model_Stealing_Attack
 python initialize_models.py
-cd ..
+cd ../..
 
-echo "All models initialized successfully!"
+# Initialize AI-driven attack data
+echo "Initializing AI-Driven Phishing data..."
+cd AI_Driven_Attacks/AI_ML_Phishing
+python initialize_data.py
+cd ../..
+
+echo "Initializing DeepFake Attack data..."
+cd AI_Driven_Attacks/Deep_Fake_Attack
+python initialize_data.py
+cd ../..
+
+echo "All models and data initialized successfully!"
 EOL
 
 chmod +x initialize_all_models.sh
@@ -546,15 +737,15 @@ source venv/bin/activate
 
 # Start Flask backends in background
 echo "Starting Flask backends..."
-cd Backdoor_Attack
-python deploy.py > ../logs/backdoor_flask.log 2>&1 &
+cd AI_Attacks_Material/Backdoor_Attack
+python deploy.py > ../../logs/backdoor_flask.log 2>&1 &
 BACKDOOR_PID=\$!
-cd ..
+cd ../..
 
-cd Evasion_Attack
-python deploy.py > ../logs/evasion_flask.log 2>&1 &
+cd AI_Attacks_Material/Evasion_Attack
+python deploy.py > ../../logs/evasion_flask.log 2>&1 &
 EVASION_PID=\$!
-cd ..
+cd ../..
 
 # Wait for Flask servers to initialize
 echo "Waiting for Flask servers to initialize..."
@@ -562,10 +753,11 @@ sleep 5
 
 # Start React development servers in separate terminals
 echo "Starting React applications..."
-gnome-terminal --tab -- bash -c "cd Lab/1.\ evasion_attack_demo && npm start; bash"
-gnome-terminal --tab -- bash -c "cd Lab/2.\ poisoning-attack-demo && PORT=3001 npm start; bash"
-gnome-terminal --tab -- bash -c "cd Lab/3.\ backdoor-attack-demo && PORT=3002 npm start; bash"
-gnome-terminal --tab -- bash -c "cd Lab/4.\ model-stealing-demo && PORT=3003 npm start; bash"
+gnome-terminal --tab -- bash -c "cd Lab_Demonstration/1.\ evasion_attack_demo && npm start; bash"
+gnome-terminal --tab -- bash -c "cd Lab_Demonstration/2.\ poisoning-attack-demo && PORT=3001 npm start; bash"
+gnome-terminal --tab -- bash -c "cd Lab_Demonstration/3.\ backdoor-attack-demo && PORT=3002 npm start; bash"
+gnome-terminal --tab -- bash -c "cd Lab_Demonstration/4.\ model-stealing-demo && PORT=3003 npm start; bash"
+gnome-terminal --tab -- bash -c "cd Lab_Demonstration/5.\ adversarial_attack && PORT=3004 npm start; bash"
 
 echo "All services started!"
 echo "To stop Flask servers, run: kill \$BACKDOOR_PID \$EVASION_PID"
@@ -620,6 +812,7 @@ This will:
 2. Poisoning Attack Demo: http://localhost:3001
 3. Backdoor Attack Demo: http://localhost:3002
 4. Model Stealing Demo: http://localhost:3003
+5. Adversarial Attack Demo: http://localhost:3004
 
 ## Running Individual Modules
 
@@ -638,7 +831,7 @@ To run a specific Flask backend:
 
 \`\`\`bash
 source venv/bin/activate
-cd Backdoor_Attack  # or any other module directory
+cd AI_Attacks_Material/Backdoor_Attack  # or any other module directory
 python deploy.py
 \`\`\`
 
@@ -647,37 +840,23 @@ python deploy.py
 To run a specific React application:
 
 \`\`\`bash
-cd Lab/1.\ evasion_attack_demo  # or any other React app directory
+cd Lab_Demonstration/1.\ evasion_attack_demo  # or any other React app directory
 npm start
 \`\`\`
 
-## Troubleshooting
+## Directory Structure
 
-### Common Issues:
-
-1. **"No module named 'tensorflow'"**: Make sure you're using the correct virtual environment with Python 3.10. Run \`which python\` to verify you're using the Python from the venv.
-
-2. **React-scripts not found**: Reinstall the node modules:
-   \`\`\`bash
-   cd Lab/1.\ evasion_attack_demo
-   rm -rf node_modules
-   npm install
-   \`\`\`
-
-3. **"externally-managed-environment" error**: Make sure you're using the virtual environment:
-   \`\`\`bash
-   source venv/bin/activate
-   \`\`\`
-
-Check log files in the \`logs/\` directory for more detailed error messages.
-EOL
-
-print_header "Installation Complete!"
-print_info "To complete setup, run the initialization script for all models:"
-print_info "./initialize_all_models.sh"
-print_info ""
-print_info "Then check POST_INSTALL_INSTRUCTIONS.md for next steps."
-print_info "To start the lab, run: ./start_lab.sh"
-
-# Deactivate virtual environment
-deactivate
+\`\`\`
+├── AI_Attacks_Material
+│   ├── Backdoor_Attack          # Backdoor attacks against ML models 
+│   ├── Evasion_Attack           # Various evasion attack implementations
+│   ├── Model_Stealing_Attack    # Model extraction and stealing techniques
+│   ├── Poisoning_Attack         # Training data poisoning attacks
+│   └── Realizable_Attack        # Practical real-world adversarial examples
+├── AI_Driven_Attacks
+│   ├── AI_ML_Phishing           # Educational AI-driven phishing attack demonstration
+│   └── Deep_Fake_Attack         # Deepfake creation and detection
+├── Lab_Demonstration            # Interactive web-based demonstrations
+│   ├── 1. evasion_attack_demo
+│   ├── 2. poisoning-attack-demo
+│   ├── 3. backdoor-attack-demo
