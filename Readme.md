@@ -86,8 +86,8 @@ The `Lab/` directory contains interactive web-based demonstrations:
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/yourusername/ai-security-privacy-lab.git
-   cd ai-security-privacy-lab
+   git clone https://github.com/habroshan/Security-of-AI.git
+   cd Security-of-AI
    ```
 
 2. Install Python & Other Libraries dependencies:
