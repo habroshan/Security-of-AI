@@ -11,14 +11,22 @@ This project provides hands-on tools, demonstrations, and learning materials to 
 The repository is organized into separate modules, each focusing on different attack vectors:
 
 ```
-├── AI_ML_Phishing               # Educational AI-driven phishing attack demonstration
-├── Backdoor_Attack              # Backdoor attacks against ML models
-├── Deep_Fake_Attack             # Deepfake creation and detection
-├── Evasion_Attack               # Various evasion attack implementations
-├── Lab                          # Interactive web-based demonstrations
-├── Model_Stealing_Attack        # Model extraction and stealing techniques
-├── Poisoning_Attack             # Training data poisoning attacks
-├── Realizable_Attack            # Practical real-world adversarial examples
+
+├── AI_Attacks_Material
+│   ├── Backdoor_Attack          # Backdoor attacks against ML models 
+│   ├── Evasion_Attack           # Various evasion attack implementations
+│   ├── Model_Stealing_Attack    # Model extraction and stealing techniques
+│   ├── Poisoning_Attack         # Training data poisoning attacks
+│   └── Realizable_Attack        # Practical real-world adversarial examples
+├── AI_Driven_Attacks
+│   ├── AI_ML_Phishing           # Educational AI-driven phishing attack demonstration
+│   └── Deep_Fake_Attack         # Deepfake creation and detection
+├── Lab_Demonstration            # Interactive web-based demonstrations
+│   ├── 1. evasion_attack_demo
+│   ├── 2. poisoning-attack-demo
+│   ├── 3. backdoor-attack-demo
+│   ├── 4. model-stealing-demo
+│   └── 5. adversarial_attack
 └── Requirements.txt             # Project dependencies
 ```
 
