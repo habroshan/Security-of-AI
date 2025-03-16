@@ -1,0 +1,2 @@
+To Run stimulation open the terminal in current directory 
+run the command "npm start"

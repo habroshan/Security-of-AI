@@ -1,0 +1,13 @@
+To activate the virtual environment and install **Seaborn**, follow these steps:
+
+### 1. **Activate the Virtual Environment**
+```bash
+source venv/bin/activate
+```
+
+### 2. **Install Seaborn**
+```bash
+pip install seaborn
+```
+
+This will activate your virtual environment and install Seaborn, which is a great library for data visualization. Let me know if you need further assistance!

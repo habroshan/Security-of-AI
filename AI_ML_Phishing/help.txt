@@ -1,0 +1,52 @@
+These are useful commands for installing and setting up libraries for machine learning projects, particularly for TensorFlow and PyTorch. Here’s a breakdown of the process:
+
+1. **Update system packages**:
+   ```bash
+   sudo apt update
+   ```
+
+2. **Install essential software properties**:
+   ```bash
+   sudo apt install software-properties-common -y
+   ```
+
+3. **Add Python PPA repository for newer Python versions** (e.g., Python 3.10):
+   ```bash
+   sudo add-apt-repository ppa:deadsnakes/ppa -y
+   sudo apt update
+   ```
+
+4. **Install Python 3.10 and related development tools**:
+   ```bash
+   sudo apt install python3.10 python3.10-venv python3.10-dev -y
+   ```
+
+5. **Create a virtual environment**:
+   ```bash
+   python3.10 -m venv venv
+   ```
+
+6. **Activate the virtual environment**:
+   ```bash
+   source venv/bin/activate
+   ```
+
+7. **Install TensorFlow and other essential libraries**:
+   ```bash
+   pip install tensorflow
+   pip install pandas
+   pip install scikit-learn
+   pip install nltk
+   ```
+
+8. **Install PyTorch, torchvision, and torchaudio**:
+   ```bash
+   pip install torch torchvision torchaudio
+   ```
+
+9. **Install Hugging Face Transformers library**:
+   ```bash
+   pip install transformers
+   ```
+
+These commands should help set up a machine learning environment with all necessary libraries. Let me know if you need further help!

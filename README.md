@@ -1,1 +1,0 @@
-# cybok_lab
