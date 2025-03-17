@@ -1,6 +1,6 @@
 # AI Security and Privacy Lab Environment
 
-This repository contains a comprehensive lab environment and educational materials for exploring AI/ML security and privacy concepts, based on the CyBOK (Cyber Security Body of Knowledge) Security and Privacy of AI Knowledge Guide.
+This repository contains a comprehensive lab environment and educational materials for exploring AI/ML security and privacy concepts, based on the CyBOK (Cyber Security Body of Knowledge) Security and Privacy of AI Knowledge Area.
 
 ## Overview
 
