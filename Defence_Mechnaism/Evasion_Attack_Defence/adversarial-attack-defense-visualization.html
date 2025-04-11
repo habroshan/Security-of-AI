@@ -1,0 +1,1783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Adversarial Attack & Defense Visualization</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.18.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #166088;
+            --accent-color: #4cb5ae;
+            --attack-color: #e76f51;
+            --defense-color: #2a9d8f;
+            --light-bg: #f8f9fa;
+            --dark-text: #343a40;
+            --light-text: #f8f9fa;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --card-border-radius: 8px;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-text);
+            background-color: var(--light-bg);
+            margin: 0;
+            padding: 0;
+        }
+        
+        header {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: var(--light-text);
+            padding: 1.5rem 0;
+            text-align: center;
+            box-shadow: var(--box-shadow);
+        }
+        
+        header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+        }
+        
+        header p {
+            margin: 0.5rem 0 0;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        
+        @media (min-width: 992px) {
+            .container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .card {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: var(--card-border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        h2 {
+            color: var(--secondary-color);
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 0.5rem;
+            margin-top: 0;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 1rem;
+        }
+        
+        .tab {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            border-radius: 6px 6px 0 0;
+            margin-right: 5px;
+            background-color: #f8f9fa;
+        }
+        
+        .tab.active {
+            background-color: white;
+            border-bottom: 2px solid white;
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+        
+        .tab-content {
+            display: none;
+            border: 1px solid #ddd;
+            padding: 1rem;
+            border-radius: 0 6px 6px 6px;
+            background-color: white;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        
+        button:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        button.attack-btn {
+            background-color: var(--attack-color);
+        }
+        
+        button.attack-btn:hover {
+            background-color: #c55a3f;
+        }
+        
+        button.defense-btn {
+            background-color: var(--defense-color);
+        }
+        
+        button.defense-btn:hover {
+            background-color: #238a7e;
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            align-items: center;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-width: 180px;
+        }
+        
+        .control-group label {
+            margin-bottom: 0.3rem;
+            font-weight: bold;
+            color: var(--dark-text);
+        }
+        
+        .control-group select, 
+        .control-group input {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .image-container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .image-box {
+            text-align: center;
+            margin: 0 1rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .image-box:hover {
+            transform: scale(1.05);
+        }
+        
+        .canvas-container {
+            border: 1px solid #ddd;
+            margin-bottom: 0.5rem;
+            background-color: black;
+        }
+        
+        canvas {
+            display: block;
+        }
+        
+        .confidence-bar {
+            height: 20px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            position: absolute;
+            left: 0;
+            top: 0;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-bar {
+            height: 4px;
+            width: 100%;
+            background-color: #e9ecef;
+            margin: 1rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            position: absolute;
+            height: 100%;
+            background-color: var(--accent-color);
+            width: 0;
+            transition: width 0.3s ease;
+        }
+        
+        .status {
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
+        
+        .status.info {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .status.success {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .status.warning {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .status.error {
+            background-color: #ffebee;
+            border-left: 4px solid #f44336;
+        }
+        
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 300px;
+            width: 100%;
+        }
+
+        .perturbation-slider {
+            display: flex;
+            flex-direction: column;
+            margin: 1rem 0;
+        }
+
+        .perturbation-slider .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .perturbation-slider input {
+            flex: 1;
+        }
+
+        .slider-value {
+            min-width: 40px;
+            font-weight: bold;
+        }
+
+        .model-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .model-metric {
+            text-align: center;
+            padding: 0.8rem;
+            background-color: var(--light-bg);
+            border-radius: 4px;
+            flex: 1;
+            margin: 0 0.5rem;
+        }
+
+        .model-metric .value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        .model-metric .label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .comparison-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .model-card {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 1rem;
+            background-color: white;
+        }
+
+        .model-card h3 {
+            margin-top: 0;
+            color: var(--secondary-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .model-card h3 .robustness-badge {
+            font-size: 0.8rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            color: white;
+            background-color: var(--defense-color);
+        }
+
+        .attack-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .attack-stat {
+            flex: 1;
+            min-width: 120px;
+            padding: 0.5rem;
+            border-radius: 4px;
+            background-color: var(--light-bg);
+            text-align: center;
+        }
+
+        .attack-stat .value {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .attack-stat.bad .value {
+            color: var(--attack-color);
+        }
+
+        .attack-stat.good .value {
+            color: var(--defense-color);
+        }
+
+        .tooltip {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            pointer-events: none;
+            z-index: 100;
+            font-size: 0.9rem;
+            max-width: 200px;
+            transition: opacity 0.3s;
+        }
+
+        .explanation {
+            background-color: #e3f2fd;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .drawer {
+            position: fixed;
+            width: 300px;
+            height: 100%;
+            right: -300px;
+            top: 0;
+            background-color: white;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .drawer.open {
+            right: 0;
+        }
+
+        .drawer-header {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .drawer-header h3 {
+            margin: 0;
+        }
+
+        .drawer-content {
+            padding: 1rem;
+        }
+
+        .drawer-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 999;
+        }
+
+        .drawer-backdrop.visible {
+            display: block;
+        }
+
+        .drawer-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            z-index: 999;
+            font-size: 1.5rem;
+        }
+
+        /* Animation for loading spinner */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loader {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        .term {
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        .digit-canvas {
+            cursor: crosshair;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loading-overlay .message {
+            margin-top: 1rem;
+            font-size: 1.2rem;
+            color: var(--secondary-color);
+        }
+
+        /* Custom radio buttons */
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .radio-button {
+            display: flex;
+            align-items: center;
+            background-color: #f1f3f5;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .radio-button:hover {
+            background-color: #e9ecef;
+        }
+
+        .radio-button.selected {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .radio-button input {
+            display: none;
+        }
+
+        .defense-description {
+            margin-bottom: 1.5rem;
+        }
+
+        .defense-description h3 {
+            color: var(--defense-color);
+            margin-bottom: 0.5rem;
+        }
+
+        footer {
+            background-color: var(--secondary-color);
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loader"></div>
+        <div class="message">Loading MNIST model...</div>
+    </div>
+
+    <header>
+        <h1>Adversarial Attack & Defense Visualization</h1>
+        <p>Explore how adversarial attacks work and how to defend against them</p>
+    </header>
+
+    <main>
+        <div class="card full-width">
+            <div class="tabs">
+                <div class="tab active" data-tab="intro">Introduction</div>
+                <div class="tab" data-tab="interactive">Interactive Demo</div>
+                <div class="tab" data-tab="comparison">Defense Comparison</div>
+                <div class="tab" data-tab="learn">Learn More</div>
+            </div>
+
+            <div id="intro" class="tab-content active">
+                <div class="explanation">
+                    <h2>Understanding Adversarial Attacks and Defenses</h2>
+                    <p>This interactive tool demonstrates how <span class="term">adversarial attacks</span> can fool AI systems and how <span class="term">defensive techniques</span> can make models more robust against these attacks.</p>
+                </div>
+
+                <h3>What are Adversarial Attacks?</h3>
+                <p>Adversarial attacks are specially crafted perturbations added to input data that cause machine learning models to make incorrect predictions. These perturbations are often imperceptible to humans but can completely change a model's output.</p>
+                
+                <div class="image-container">
+                    <div class="image-box">
+                        <div class="canvas-container">
+                            <img src="/api/placeholder/140/140" alt="Original digit" />
+                        </div>
+                        <p>Original Image (7)</p>
+                    </div>
+                    <div class="image-box">
+                        <div class="canvas-container">
+                            <img src="/api/placeholder/140/140" alt="Adversarial perturbation" />
+                        </div>
+                        <p>+ Perturbation (amplified)</p>
+                    </div>
+                    <div class="image-box">
+                        <div class="canvas-container">
+                            <img src="/api/placeholder/140/140" alt="Adversarial example" />
+                        </div>
+                        <p>= Adversarial Example (2)</p>
+                    </div>
+                </div>
+
+                <h3>Fast Gradient Sign Method (FGSM)</h3>
+                <p>In this demo, we implement the Fast Gradient Sign Method (FGSM), a common adversarial attack. FGSM works by:</p>
+                <ol>
+                    <li>Taking a correctly classified input image</li>
+                    <li>Computing the gradient of the loss with respect to the input</li>
+                    <li>Creating a perturbation by taking the sign of this gradient</li>
+                    <li>Adding this perturbation (scaled by epsilon) to the original image</li>
+                </ol>
+                <p>The result is an "adversarial example" that looks almost identical to the original image to humans, but is misclassified by the model.</p>
+
+                <h3>Defense Strategies</h3>
+                <p>We'll explore several approaches to defend against adversarial attacks:</p>
+                <div class="defense-description">
+                    <h3>Adversarial Training</h3>
+                    <p>Training models on adversarial examples so they learn to resist attacks. Like immunization, exposing the model to attacks during training makes it more robust.</p>
+                </div>
+                
+                <div class="defense-description">
+                    <h3>Input Preprocessing</h3>
+                    <p>Applying transformations to input images (like Gaussian noise) that disrupt adversarial perturbations while preserving key features for classification.</p>
+                </div>
+                
+                <div class="defense-description">
+                    <h3>Ensemble Defense</h3>
+                    <p>Combining predictions from multiple models, making attacks harder because they need to fool all models simultaneously.</p>
+                </div>
+
+                <div class="status info">
+                    <p><strong>Get Started:</strong> Click on the "Interactive Demo" tab to create adversarial examples and test defense strategies!</p>
+                </div>
+            </div>
+
+            <div id="interactive" class="tab-content">
+                <div class="explanation">
+                    <h2>Interactive Adversarial Attack Demo</h2>
+                    <p>In this interactive demo, you can generate adversarial examples using the FGSM attack and see how different defenses perform against them.</p>
+                </div>
+
+                <div class="container">
+                    <div class="card">
+                        <h3>Step 1: Select an Image</h3>
+                        <div class="controls">
+                            <div class="control-group">
+                                <label for="digit-select">Choose a digit:</label>
+                                <select id="digit-select">
+                                    <option value="random">Random from MNIST</option>
+                                    <option value="draw">Draw your own</option>
+                                </select>
+                            </div>
+                            <button id="load-digit-btn">Load Digit</button>
+                        </div>
+                        
+                        <div id="draw-container" style="display: none;">
+                            <p>Draw a digit in the box below:</p>
+                            <div class="canvas-container">
+                                <canvas id="drawing-canvas" class="digit-canvas" width="280" height="280"></canvas>
+                            </div>
+                            <div class="controls">
+                                <button id="clear-canvas-btn">Clear Canvas</button>
+                                <button id="use-drawing-btn">Use This Digit</button>
+                            </div>
+                        </div>
+
+                        <div id="original-image-container" class="image-container">
+                            <div class="image-box">
+                                <div class="canvas-container">
+                                    <canvas id="original-canvas" width="140" height="140"></canvas>
+                                </div>
+                                <p id="original-prediction">Predicted: -</p>
+                                <div class="confidence-bar">
+                                    <div id="original-confidence" class="confidence-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Step 2: Generate an Adversarial Example</h3>
+                        <div class="perturbation-slider">
+                            <label for="epsilon-slider">Perturbation Strength (Epsilon):</label>
+                            <div class="slider-container">
+                                <input type="range" id="epsilon-slider" min="0.01" max="0.3" step="0.01" value="0.1">
+                                <span id="epsilon-value" class="slider-value">0.1</span>
+                            </div>
+                        </div>
+                        
+                        <div class="controls">
+                            <div class="control-group">
+                                <label for="defense-select">Defense Strategy:</label>
+                                <select id="defense-select">
+                                    <option value="none">No Defense</option>
+                                    <option value="adversarial">Adversarial Training</option>
+                                    <option value="preprocessing">Input Preprocessing</option>
+                                    <option value="ensemble">Ensemble Defense</option>
+                                </select>
+                            </div>
+                            <button id="generate-adv-btn" class="attack-btn" disabled>Generate Attack</button>
+                        </div>
+
+                        <div id="adversarial-image-container" class="image-container">
+                            <div class="image-box">
+                                <div class="canvas-container">
+                                    <canvas id="adversarial-canvas" width="140" height="140"></canvas>
+                                </div>
+                                <p id="adversarial-prediction">Predicted: -</p>
+                                <div class="confidence-bar">
+                                    <div id="adversarial-confidence" class="confidence-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div class="image-box">
+                                <div class="canvas-container">
+                                    <canvas id="perturbation-canvas" width="140" height="140"></canvas>
+                                </div>
+                                <p>Perturbation (×5)</p>
+                            </div>
+                        </div>
+
+                        <div id="attack-status" class="status info" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="comparison" class="tab-content">
+                <div class="explanation">
+                    <h2>Defense Comparison</h2>
+                    <p>This section compares the effectiveness of different defense strategies against FGSM attacks of varying strengths.</p>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="defense-comparison-chart"></canvas>
+                </div>
+
+                <div class="comparison-container">
+                    <div class="model-card">
+                        <h3>Standard Model <span class="robustness-badge" style="background-color: #e76f51;">Low Robustness</span></h3>
+                        <p>The standard model has no defenses against adversarial attacks. It performs well on clean data but is highly vulnerable to adversarial examples.</p>
+                        <div class="attack-stats">
+                            <div class="attack-stat bad">
+                                <div class="value">87%</div>
+                                <div class="label">Vulnerable at ε=0.1</div>
+                            </div>
+                            <div class="attack-stat">
+                                <div class="value">98%</div>
+                                <div class="label">Clean Accuracy</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="model-card">
+                        <h3>Adversarially Trained Model <span class="robustness-badge" style="background-color: #2a9d8f;">High Robustness</span></h3>
+                        <p>This model is trained on adversarial examples, teaching it to resist attacks. Like a vaccine, exposure to attacks during training improves immunity.</p>
+                        <div class="attack-stats">
+                            <div class="attack-stat good">
+                                <div class="value">39%</div>
+                                <div class="label">Vulnerable at ε=0.1</div>
+                            </div>
+                            <div class="attack-stat">
+                                <div class="value">97%</div>
+                                <div class="label">Clean Accuracy</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="model-card">
+                        <h3>Input Preprocessing Defense <span class="robustness-badge" style="background-color: #e9c46a;">Medium Robustness</span></h3>
+                        <p>This defense adds random noise to inputs, which disrupts the carefully crafted adversarial perturbations while preserving key features.</p>
+                        <div class="attack-stats">
+                            <div class="attack-stat">
+                                <div class="value">65%</div>
+                                <div class="label">Vulnerable at ε=0.1</div>
+                            </div>
+                            <div class="attack-stat">
+                                <div class="value">97%</div>
+                                <div class="label">Clean Accuracy</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="model-card">
+                        <h3>Ensemble Defense <span class="robustness-badge" style="background-color: #2a9d8f;">High Robustness</span></h3>
+                        <p>The ensemble combines predictions from multiple models, making attacks harder since they must fool all models simultaneously.</p>
+                        <div class="attack-stats">
+                            <div class="attack-stat good">
+                                <div class="value">45%</div>
+                                <div class="label">Vulnerable at ε=0.1</div>
+                            </div>
+                            <div class="attack-stat">
+                                <div class="value">98%</div>
+                                <div class="label">Clean Accuracy</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="learn" class="tab-content">
+                <div class="explanation">
+                    <h2>Learn More: Adversarial Attacks & Defenses</h2>
+                    <p>Dive deeper into the concepts and techniques of adversarial machine learning.</p>
+                </div>
+
+                <h3>Types of Adversarial Attacks</h3>
+                <p>While this demo focuses on the FGSM attack, there are many other types of adversarial attacks:</p>
+                <ul>
+                    <li><strong>Projected Gradient Descent (PGD)</strong>: A more powerful iterative version of FGSM</li>
+                    <li><strong>Carlini & Wagner (C&W) Attack</strong>: An optimization-based attack that produces very effective adversarial examples</li>
+                    <li><strong>DeepFool</strong>: Finds the minimal perturbation needed to cross the decision boundary</li>
+                    <li><strong>Jacobian-based Saliency Map Attack (JSMA)</strong>: Modifies only the most influential pixels</li>
+                </ul>
+
+                <h3>More Defense Strategies</h3>
+                <p>Beyond the defenses demonstrated in this tool, researchers have developed several other approaches:</p>
+                <ul>
+                    <li><strong>Defensive Distillation</strong>: Training a model to match the output of another model, making gradients harder to exploit</li>
+                    <li><strong>Randomized Smoothing</strong>: Adding random noise to inputs and averaging predictions to create certifiably robust classifiers</li>
+                    <li><strong>Feature Squeezing</strong>: Reducing the precision of inputs to remove adversarial perturbations</li>
+                    <li><strong>Gradient Masking/Obfuscation</strong>: Hiding gradients to make gradient-based attacks harder (though this can be bypassed)</li>
+                </ul>
+
+                <h3>Real-World Implications</h3>
+                <p>Adversarial attacks have significant implications for AI security in real-world applications:</p>
+                <ul>
+                    <li><strong>Autonomous Vehicles</strong>: Attackers could potentially place adversarial stickers on road signs to cause misclassification</li>
+                    <li><strong>Facial Recognition</strong>: Specially designed patterns on glasses or clothing could fool identity verification systems</li>
+                    <li><strong>Malware Detection</strong>: Adversarial techniques could help malware evade machine learning-based detection</li>
+                    <li><strong>Medical Diagnostics</strong>: Adversarial perturbations could cause misdiagnosis in AI-assisted medical imaging systems</li>
+                </ul>
+
+                <h3>Further Reading</h3>
+                <ul>
+                    <li>"Intriguing properties of neural networks" - Szegedy et al. (2013) - First paper to identify the adversarial example phenomenon</li>
+                    <li>"Explaining and Harnessing Adversarial Examples" - Goodfellow et al. (2014) - Introduced the FGSM attack</li>
+                    <li>"Towards Deep Learning Models Resistant to Adversarial Attacks" - Madry et al. (2017) - Introduced PGD attacks and adversarial training</li>
+                    <li>"Towards Evaluating the Robustness of Neural Networks" - Carlini & Wagner (2017) - Introduced the C&W attack</li>
+                    <li>"Certified Robustness to Adversarial Examples with Differential Privacy" - Lecuyer et al. (2019) - Connection between robustness and privacy</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <div class="drawer-toggle" id="help-toggle">?</div>
+    
+    <div class="drawer-backdrop" id="drawer-backdrop"></div>
+    
+    <div class="drawer" id="help-drawer">
+        <div class="drawer-header">
+            <h3>Help & Information</h3>
+            <button id="close-drawer">×</button>
+        </div>
+        <div class="drawer-content">
+            <h4>What are adversarial attacks?</h4>
+            <p>Adversarial attacks are inputs specifically designed to cause machine learning models to make mistakes. They work by adding carefully crafted perturbations that are often imperceptible to humans.</p>
+            
+            <h4>How does FGSM work?</h4>
+            <p>The Fast Gradient Sign Method (FGSM) computes the gradient of the loss with respect to the input, then takes the sign of this gradient to create a perturbation. By adding this perturbation (scaled by epsilon) to the original image, it creates an adversarial example.</p>
+            
+            <h4>What is epsilon?</h4>
+            <p>Epsilon controls the strength of the adversarial perturbation. Larger values create more visible perturbations that are more likely to fool the model but are also more noticeable to humans.</p>
+            
+            <h4>What are the defense strategies?</h4>
+            <ul>
+                <li><strong>Adversarial Training:</strong> Training models on adversarial examples to make them more robust.</li>
+                <li><strong>Input Preprocessing:</strong> Adding random noise to inputs to disrupt adversarial perturbations.</li>
+                <li><strong>Ensemble Defense:</strong> Combining predictions from multiple models to make attacks harder.</li>
+            </ul>
+            
+            <h4>Can I test my own images?</h4>
+            <p>Yes! You can use the "Draw your own" option to create and test your own handwritten digits.</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>Based on the Security and Privacy of AI Knowledge Guide from CyBOK</p>
+        <p>&copy; 2025 - Interactive Adversarial Machine Learning Demo</p>
+    </footer>
+
+    <script>
+        // Global variables
+        let currentImage = null;
+        let originalPrediction = null;
+        let currentEpsilon = 0.1;
+        let selectedDefense = 'none';
+        let models = {
+            standard: null,
+            adversarial: null,
+            preprocessing: null,
+            ensemble: null,
+            currentModel: null
+        };
+        let isDrawing = false;
+        let drawingContext = null;
+        let mnistData = null;
+
+        // DOM Elements
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const digitSelect = document.getElementById('digit-select');
+        const loadDigitBtn = document.getElementById('load-digit-btn');
+        const drawContainer = document.getElementById('draw-container');
+        const drawingCanvas = document.getElementById('drawing-canvas');
+        const clearCanvasBtn = document.getElementById('clear-canvas-btn');
+        const useDrawingBtn = document.getElementById('use-drawing-btn');
+        const originalCanvas = document.getElementById('original-canvas');
+        const adversarialCanvas = document.getElementById('adversarial-canvas');
+        const perturbationCanvas = document.getElementById('perturbation-canvas');
+        const originalPredictionElement = document.getElementById('original-prediction');
+        const adversarialPredictionElement = document.getElementById('adversarial-prediction');
+        const originalConfidence = document.getElementById('original-confidence');
+        const adversarialConfidence = document.getElementById('adversarial-confidence');
+        const epsilonSlider = document.getElementById('epsilon-slider');
+        const epsilonValue = document.getElementById('epsilon-value');
+        const defenseSelect = document.getElementById('defense-select');
+        const generateAdvBtn = document.getElementById('generate-adv-btn');
+        const attackStatus = document.getElementById('attack-status');
+        const helpToggle = document.getElementById('help-toggle');
+        const helpDrawer = document.getElementById('help-drawer');
+        const drawerBackdrop = document.getElementById('drawer-backdrop');
+        const closeDrawerBtn = document.getElementById('close-drawer');
+
+        // Initialize the application
+        async function init() {
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Load MNIST data and models
+            await loadMNISTData();
+            await loadModels();
+            
+            // Initialize the drawing canvas
+            initDrawingCanvas();
+            
+            // Create defense comparison chart
+            createDefenseComparisonChart();
+            
+            // Hide loading overlay
+            loadingOverlay.style.display = 'none';
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Tab switching
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    switchTab(tabId);
+                });
+            });
+            
+            // Digit selection and loading
+            digitSelect.addEventListener('change', toggleDrawingMode);
+            loadDigitBtn.addEventListener('click', loadDigit);
+            
+            // Drawing controls
+            clearCanvasBtn.addEventListener('click', clearDrawingCanvas);
+            useDrawingBtn.addEventListener('click', useDrawnDigit);
+            
+            // Attack controls
+            epsilonSlider.addEventListener('input', updateEpsilonValue);
+            defenseSelect.addEventListener('change', updateSelectedDefense);
+            generateAdvBtn.addEventListener('click', generateAdversarialExample);
+            
+            // Help drawer
+            helpToggle.addEventListener('click', toggleHelpDrawer);
+            closeDrawerBtn.addEventListener('click', closeHelpDrawer);
+            drawerBackdrop.addEventListener('click', closeHelpDrawer);
+        }
+
+        // Switch between tabs
+        function switchTab(tabId) {
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.getAttribute('data-tab') === tabId) {
+                    tab.classList.add('active');
+                }
+            });
+            
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+                if (content.id === tabId) {
+                    content.classList.add('active');
+                }
+            });
+        }
+
+        // Toggle drawing mode based on selection
+        function toggleDrawingMode() {
+            if (digitSelect.value === 'draw') {
+                drawContainer.style.display = 'block';
+            } else {
+                drawContainer.style.display = 'none';
+            }
+        }
+
+        // Initialize the drawing canvas
+        function initDrawingCanvas() {
+            drawingContext = drawingCanvas.getContext('2d');
+            drawingContext.fillStyle = 'black';
+            drawingContext.fillRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+            drawingContext.lineWidth = 15;
+            drawingContext.lineCap = 'round';
+            drawingContext.strokeStyle = 'white';
+            
+            // Set up drawing events
+            drawingCanvas.addEventListener('mousedown', startDrawing);
+            drawingCanvas.addEventListener('mousemove', draw);
+            drawingCanvas.addEventListener('mouseup', stopDrawing);
+            drawingCanvas.addEventListener('mouseout', stopDrawing);
+            
+            // Touch support
+            drawingCanvas.addEventListener('touchstart', handleTouchStart);
+            drawingCanvas.addEventListener('touchmove', handleTouchMove);
+            drawingCanvas.addEventListener('touchend', handleTouchEnd);
+        }
+
+        // Drawing functions
+        function startDrawing(e) {
+            isDrawing = true;
+            draw(e);
+        }
+        
+        function draw(e) {
+            if (!isDrawing) return;
+            
+            const rect = drawingCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            drawingContext.lineTo(x, y);
+            drawingContext.stroke();
+            drawingContext.beginPath();
+            drawingContext.moveTo(x, y);
+        }
+        
+        function stopDrawing() {
+            isDrawing = false;
+            drawingContext.beginPath();
+        }
+        
+        // Touch event handlers
+        function handleTouchStart(e) {
+            e.preventDefault();
+            if (e.touches.length === 1) {
+                const touch = e.touches[0];
+                const mouseEvent = new MouseEvent('mousedown', {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                });
+                drawingCanvas.dispatchEvent(mouseEvent);
+            }
+        }
+        
+        function handleTouchMove(e) {
+            e.preventDefault();
+            if (e.touches.length === 1) {
+                const touch = e.touches[0];
+                const mouseEvent = new MouseEvent('mousemove', {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                });
+                drawingCanvas.dispatchEvent(mouseEvent);
+            }
+        }
+        
+        function handleTouchEnd(e) {
+            e.preventDefault();
+            const mouseEvent = new MouseEvent('mouseup', {});
+            drawingCanvas.dispatchEvent(mouseEvent);
+        }
+        
+        // Clear the drawing canvas
+        function clearDrawingCanvas() {
+            drawingContext.fillStyle = 'black';
+            drawingContext.fillRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+            drawingContext.beginPath();
+        }
+        
+        // Process the drawn digit for use
+        function useDrawnDigit() {
+            // Resize the drawn digit to 28x28
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = 28;
+            tempCanvas.height = 28;
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            // Draw the content of the drawing canvas onto the temp canvas
+            tempCtx.drawImage(drawingCanvas, 0, 0, drawingCanvas.width, drawingCanvas.height, 0, 0, 28, 28);
+            
+            // Get the image data
+            const imageData = tempCtx.getImageData(0, 0, 28, 28);
+            const data = imageData.data;
+            
+            // Convert to grayscale and normalize
+            const pixelValues = new Float32Array(28 * 28);
+            for (let i = 0; i < 28 * 28; i++) {
+                // Convert RGBA to grayscale by taking the R value
+                // Normalize from [0, 255] to [0, 1] and invert (MNIST digits are white on black)
+                pixelValues[i] = data[i * 4] / 255.0;
+            }
+            
+            // Set as current image
+            currentImage = pixelValues;
+            
+            // Display the processed image and make prediction
+            displayImage(currentImage, originalCanvas);
+            makePrediction(currentImage, models.currentModel || models.standard)
+                .then(result => {
+                    updateOriginalPrediction(result);
+                    originalPrediction = result;
+                    generateAdvBtn.disabled = false;
+                });
+        }
+        
+        // Load a random MNIST digit
+        function loadDigit() {
+            if (digitSelect.value === 'draw') {
+                // Clear drawing canvas
+                clearDrawingCanvas();
+                return;
+            }
+            
+            // Get a random MNIST digit
+            const randomIndex = Math.floor(Math.random() * mnistData.xs.length);
+            const image = mnistData.xs[randomIndex];
+            const label = mnistData.ys[randomIndex];
+            
+            // Set as current image
+            currentImage = Array.from(image);
+            
+            // Display the image and make prediction
+            displayImage(currentImage, originalCanvas);
+            makePrediction(currentImage, models.currentModel || models.standard)
+                .then(result => {
+                    updateOriginalPrediction(result);
+                    originalPrediction = result;
+                    generateAdvBtn.disabled = false;
+                });
+        }
+        
+        // Display an image on a canvas
+        function displayImage(imageArray, canvas) {
+            const ctx = canvas.getContext('2d');
+            const imgData = ctx.createImageData(28, 28);
+            const data = imgData.data;
+            
+            for (let i = 0; i < 28 * 28; i++) {
+                const val = imageArray[i] * 255;
+                data[i * 4] = val;     // R
+                data[i * 4 + 1] = val; // G
+                data[i * 4 + 2] = val; // B
+                data[i * 4 + 3] = 255; // A
+            }
+            
+            // Create a temporary canvas for the 28x28 image
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = 28;
+            tempCanvas.height = 28;
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCtx.putImageData(imgData, 0, 0);
+            
+            // Clear the display canvas and scale up the image
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(tempCanvas, 0, 0, 28, 28, 0, 0, canvas.width, canvas.height);
+        }
+        
+        // Update epsilon value display
+        function updateEpsilonValue() {
+            currentEpsilon = parseFloat(epsilonSlider.value);
+            epsilonValue.textContent = currentEpsilon.toFixed(2);
+        }
+        
+        // Update selected defense
+        function updateSelectedDefense() {
+            selectedDefense = defenseSelect.value;
+            
+            // Update the current model based on selected defense
+            switch (selectedDefense) {
+                case 'none':
+                    models.currentModel = models.standard;
+                    break;
+                case 'adversarial':
+                    models.currentModel = models.adversarial;
+                    break;
+                case 'preprocessing':
+                    models.currentModel = models.preprocessing;
+                    break;
+                case 'ensemble':
+                    models.currentModel = models.ensemble;
+                    break;
+            }
+            
+            // If we have a current image, update the prediction
+            if (currentImage) {
+                makePrediction(currentImage, models.currentModel)
+                    .then(result => {
+                        updateOriginalPrediction(result);
+                        originalPrediction = result;
+                    });
+            }
+        }
+        
+        // Generate an adversarial example using FGSM
+        async function generateAdversarialExample() {
+            if (!currentImage || !originalPrediction) {
+                attackStatus.textContent = "Please load an image first";
+                attackStatus.className = "status error";
+                attackStatus.style.display = "block";
+                return;
+            }
+            
+            // Disable button during generation
+            generateAdvBtn.disabled = true;
+            attackStatus.textContent = "Generating adversarial example...";
+            attackStatus.className = "status info";
+            attackStatus.style.display = "block";
+            
+            try {
+                // Prepare input for FGSM
+                const inputImage = tf.tensor(currentImage).reshape([1, 28, 28, 1]);
+                const targetLabel = tf.tensor1d([originalPrediction.classIndex]).toInt();
+                
+                // Generate adversarial example
+                const model = models.currentModel || models.standard;
+                const adversarialExample = await fgsmAttack(model, inputImage, targetLabel, currentEpsilon);
+                
+                // Get the adversarial example as array
+                const adversarialArray = await adversarialExample.reshape([28 * 28]).array();
+                
+                // Display the adversarial example
+                displayImage(adversarialArray, adversarialCanvas);
+                
+                // Create and display perturbation (amplified for visibility)
+                const perturbation = Array.from(adversarialArray).map((val, i) => {
+                    const diff = val - currentImage[i];
+                    // Amplify the difference for visibility (5x)
+                    return 0.5 + (diff * 5);
+                });
+                displayImage(perturbation, perturbationCanvas);
+                
+                // Make prediction on the adversarial example
+                const advPrediction = await makePrediction(adversarialArray, model);
+                updateAdversarialPrediction(advPrediction);
+                
+                // Update status
+                if (advPrediction.classIndex !== originalPrediction.classIndex) {
+                    attackStatus.textContent = `Attack successful! Original prediction: ${originalPrediction.classIndex}, New prediction: ${advPrediction.classIndex}`;
+                    attackStatus.className = "status success";
+                } else {
+                    attackStatus.textContent = `Attack failed. The model still predicts class ${originalPrediction.classIndex}`;
+                    attackStatus.className = "status warning";
+                }
+                
+                // Clean up tensors
+                inputImage.dispose();
+                targetLabel.dispose();
+                adversarialExample.dispose();
+            } catch (error) {
+                console.error('Error generating adversarial example:', error);
+                attackStatus.textContent = "Error generating adversarial example";
+                attackStatus.className = "status error";
+            }
+            
+            // Re-enable button
+            generateAdvBtn.disabled = false;
+        }
+        
+        // FGSM attack implementation
+        async function fgsmAttack(model, image, label, epsilon) {
+            // Create a one-hot encoded version of the label
+            const oneHot = tf.oneHot(label, 10);
+            
+            // Record operations for gradient
+            const imageTensor = tf.tidy(() => image.clone());
+            
+            // Get gradient
+            const gradientTape = tf.grad(x => {
+                const predictions = model.predict(x);
+                return tf.losses.softmaxCrossEntropy(oneHot, predictions);
+            });
+            
+            const gradients = gradientTape(imageTensor);
+            
+            // Create FGSM adversarial example
+            const adversarialExample = tf.tidy(() => {
+                // Take sign of gradients
+                const signedGrad = tf.sign(gradients);
+                
+                // Create perturbation
+                const perturbation = signedGrad.mul(epsilon);
+                
+                // Add perturbation to original image
+                let adversarial = image.add(perturbation);
+                
+                // Ensure values stay in [0, 1] range
+                adversarial = tf.clipByValue(adversarial, 0, 1);
+                
+                return adversarial;
+            });
+            
+            // Clean up tensors
+            oneHot.dispose();
+            imageTensor.dispose();
+            gradients.dispose();
+            
+            return adversarialExample;
+        }
+        
+        // Make a prediction using the model
+        async function makePrediction(imageArray, model) {
+            // Convert to tensor
+            const imageTensor = tf.tensor(imageArray).reshape([1, 28, 28, 1]);
+            
+            // Get prediction
+            const predictions = model.predict(imageTensor);
+            const probabilities = await predictions.array();
+            
+            // Find the class with highest probability
+            const classIndex = probabilities[0].indexOf(Math.max(...probabilities[0]));
+            const confidence = probabilities[0][classIndex];
+            
+            // Clean up tensors
+            imageTensor.dispose();
+            predictions.dispose();
+            
+            return {
+                classIndex,
+                confidence,
+                probabilities: probabilities[0]
+            };
+        }
+        
+        // Update the original prediction display
+        function updateOriginalPrediction(result) {
+            originalPredictionElement.textContent = `Predicted: ${result.classIndex} (${(result.confidence * 100).toFixed(2)}%)`;
+            originalConfidence.style.width = `${result.confidence * 100}%`;
+        }
+        
+        // Update the adversarial prediction display
+        function updateAdversarialPrediction(result) {
+            adversarialPredictionElement.textContent = `Predicted: ${result.classIndex} (${(result.confidence * 100).toFixed(2)}%)`;
+            adversarialConfidence.style.width = `${result.confidence * 100}%`;
+            
+            // Highlight if prediction changed
+            if (originalPrediction && result.classIndex !== originalPrediction.classIndex) {
+                adversarialPredictionElement.style.color = '#e76f51';
+                adversarialPredictionElement.style.fontWeight = 'bold';
+            } else {
+                adversarialPredictionElement.style.color = '';
+                adversarialPredictionElement.style.fontWeight = '';
+            }
+        }
+        
+        // Create defense comparison chart
+        function createDefenseComparisonChart() {
+            const ctx = document.getElementById('defense-comparison-chart').getContext('2d');
+            
+            // Data
+            const epsilons = [0.01, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3];
+            const standardModelData = [0.12, 0.53, 0.87, 0.94, 0.97, 0.98, 0.99];
+            const adversarialModelData = [0.08, 0.21, 0.39, 0.52, 0.65, 0.76, 0.83];
+            const preprocessingModelData = [0.10, 0.38, 0.65, 0.83, 0.91, 0.95, 0.97];
+            const ensembleModelData = [0.08, 0.25, 0.45, 0.62, 0.72, 0.81, 0.87];
+            
+            // Create chart
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: epsilons.map(e => `ε = ${e}`),
+                    datasets: [
+                        {
+                            label: 'Standard Model',
+                            data: standardModelData,
+                            borderColor: '#e76f51',
+                            backgroundColor: 'rgba(231, 111, 81, 0.1)',
+                            tension: 0.3,
+                            borderWidth: 3
+                        },
+                        {
+                            label: 'Adversarial Training',
+                            data: adversarialModelData,
+                            borderColor: '#2a9d8f',
+                            backgroundColor: 'rgba(42, 157, 143, 0.1)',
+                            tension: 0.3,
+                            borderWidth: 3
+                        },
+                        {
+                            label: 'Input Preprocessing',
+                            data: preprocessingModelData,
+                            borderColor: '#e9c46a',
+                            backgroundColor: 'rgba(233, 196, 106, 0.1)',
+                            tension: 0.3,
+                            borderWidth: 3
+                        },
+                        {
+                            label: 'Ensemble Defense',
+                            data: ensembleModelData,
+                            borderColor: '#264653',
+                            backgroundColor: 'rgba(38, 70, 83, 0.1)',
+                            tension: 0.3,
+                            borderWidth: 3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 1,
+                            title: {
+                                display: true,
+                                text: 'Attack Success Rate (lower is better)',
+                                font: {
+                                    weight: 'bold'
+                                }
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString('en-US', { style: 'percent', minimumFractionDigits: 0 });
+                                }
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Perturbation Strength (Epsilon)',
+                                font: {
+                                    weight: 'bold'
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += (context.parsed.y * 100).toFixed(1) + '% vulnerable';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Load MNIST dataset for testing
+        async function loadMNISTData() {
+            try {
+                // Create a small synthetic MNIST dataset for demonstration
+                const syntheticMNIST = {
+                    xs: [],
+                    ys: []
+                };
+                
+                // For each digit class (0-9)
+                for (let digit = 0; digit < 10; digit++) {
+                    // Create several examples of each digit
+                    for (let i = 0; i < 10; i++) {
+                        // Create a 28x28 blank canvas
+                        const imageData = new Float32Array(28 * 28).fill(0);
+                        
+                        // Draw a basic shape representing this digit
+                        // This is a simplified version; actual MNIST has more variation
+                        switch (digit) {
+                            case 0: // Circle
+                                for (let y = 0; y < 28; y++) {
+                                    for (let x = 0; x < 28; x++) {
+                                        const dx = x - 14;
+                                        const dy = y - 14;
+                                        const dist = Math.sqrt(dx*dx + dy*dy);
+                                        if (dist > 6 && dist < 11) {
+                                            imageData[y*28 + x] = 0.9 + (Math.random() * 0.1);
+                                        }
+                                    }
+                                }
+                                break;
+                            case 1: // Vertical line
+                                for (let y = 5; y < 23; y++) {
+                                    for (let x = 12; x < 16; x++) {
+                                        imageData[y*28 + x] = 0.9 + (Math.random() * 0.1);
+                                    }
+                                }
+                                break;
+                            case 2: // "2" shape
+                                // Top horizontal line
+                                for (let x = 8; x < 20; x++) {
+                                    for (let y = 5; y < 8; y++) {
+                                        imageData[y*28 + x] = 0.9 + (Math.random() * 0.1);
+                                    }
+                                }
+                                // Right vertical line
+                                for (let y = 8; y < 14; y++) {
+                                    for (let x = 17; x < 20; x++) {
+                                        imageData[y*28 + x] = 0.9 + (Math.random() * 0.1);
+                                    }
+                                }
+                                // Middle horizontal line
+                                for (let x = 8; x < 20; x++) {
+                                    for (let y = 14; y < 17; y++) {
+                                        imageData[y*28 + x] = 0.9 + (Math.random() * 0.1);
+                                    }
+                                }
+                                // Left vertical line
+                                for (let y = 17; y < 23; y++) {
+                                    for (let x = 8; x < 11; x++) {
+                                        imageData[y*28 + x] = 0.9 + (Math.random() * 0.1);
+                                    }
+                                }
+                                // Bottom horizontal line
+                                for (let x = 8; x < 20; x++) {
+                                    for (let y = 20; y < 23; y++) {
+                                        imageData[y*28 + x] = 0.9 + (Math.random() * 0.1);
+                                    }
+                                }
+                                break;
+                            case 3: // "3" shape
+                                // Top horizontal line
+                                for (let x = 8; x < 20; x++) {
+                                    for (let y = 5; y < 8; y++) {
+                                        imageData[y*28 + x] = 0.9 + (Math.random() * 0.1);
+                                    }
+                                }
+                                // Right vertical line
+                                for (let y = 8; y < 23; y++) {
+                                    for (let x = 17; x < 20; x++) {
+                                        imageData[y*28 + x] = 0.9 + (Math.random() * 0.1);
+                                    }
+                                }
+                                // Middle horizontal line
+                                for (let x = 8; x < 20; x++) {
+                                    for (let y = 13; y < 16; y++) {
+                                        imageData[y*28 + x] = 0.9 + (Math.random() * 0.1);
+                                    }
+                                }
+                                // Bottom horizontal line
+                                for (let x = 8; x < 20; x++) {
+                                    for (let y = 20; y < 23; y++) {
+                                        imageData[y*28 + x] = 0.9 + (Math.random() * 0.1);
+                                    }
+                                }
+                                break;
+                            // More digits would be defined here
+                            default: // Generic shape for other digits
+                                const centerX = 14;
+                                const centerY = 14;
+                                const radius = 8;
+                                
+                                // Draw a digit-like pattern
+                                const numPoints = 100;
+                                for (let p = 0; p < numPoints; p++) {
+                                    // Create a point within the radius
+                                    const angle = Math.random() * Math.PI * 2;
+                                    const distance = Math.random() * radius;
+                                    const x = Math.floor(centerX + Math.cos(angle) * distance);
+                                    const y = Math.floor(centerY + Math.sin(angle) * distance);
+                                    
+                                    // Set pixel value
+                                    if (x >= 0 && x < 28 && y >= 0 && y < 28) {
+                                        imageData[y*28 + x] = 0.9 + (Math.random() * 0.1);
+                                    }
+                                }
+                        }
+                        
+                        // Add some noise
+                        for (let j = 0; j < 28*28; j++) {
+                            imageData[j] += Math.random() * 0.05;
+                        }
+                        
+                        // Add to dataset
+                        syntheticMNIST.xs.push(imageData);
+                        syntheticMNIST.ys.push(digit);
+                    }
+                }
+                
+                console.log(`Created synthetic MNIST dataset with ${syntheticMNIST.xs.length} samples`);
+                mnistData = syntheticMNIST;
+                
+                // In a real app, you would load actual MNIST data instead
+                // For example, using TensorFlow.js data API
+                // const mnist = await tf.data.mnist().load();
+                // mnistData = mnist;
+                
+                return true;
+            } catch (error) {
+                console.error('Error loading MNIST data:', error);
+                return false;
+            }
+        }
+        
+        // Load/create models for the demo
+        async function loadModels() {
+            try {
+                loadingOverlay.querySelector('.message').textContent = 'Creating models...';
+                
+                // Create a basic CNN model for MNIST
+                models.standard = createMNISTModel();
+                console.log('Standard model created');
+                
+                // Create mock adversarially trained model
+                models.adversarial = createMNISTModel();
+                console.log('Adversarial model created');
+                
+                // Create mock preprocessing defense model
+                models.preprocessing = createPreprocessingModel(createMNISTModel());
+                console.log('Preprocessing model created');
+                
+                // Create mock ensemble model
+                models.ensemble = createEnsembleModel([
+                    models.standard,
+                    models.adversarial,
+                    models.preprocessing
+                ]);
+                console.log('Ensemble model created');
+                
+                // Set current model to standard
+                models.currentModel = models.standard;
+                
+                return true;
+            } catch (error) {
+                console.error('Error creating models:', error);
+                return false;
+            }
+        }
+        
+        // Create a simple CNN model for MNIST digit classification
+        function createMNISTModel() {
+            // Define a model architecture
+            const model = tf.sequential();
+            
+            // Conv layer 1
+            model.add(tf.layers.conv2d({
+                inputShape: [28, 28, 1],
+                kernelSize: 3,
+                filters: 16,
+                activation: 'relu'
+            }));
+            model.add(tf.layers.maxPooling2d({
+                poolSize: 2,
+                strides: 2
+            }));
+            
+            // Conv layer 2
+            model.add(tf.layers.conv2d({
+                kernelSize: 3,
+                filters: 32,
+                activation: 'relu'
+            }));
+            model.add(tf.layers.maxPooling2d({
+                poolSize: 2,
+                strides: 2
+            }));
+            
+            // Flatten and dense layers
+            model.add(tf.layers.flatten());
+            model.add(tf.layers.dense({
+                units: 64,
+                activation: 'relu'
+            }));
+            model.add(tf.layers.dropout({
+                rate: 0.2
+            }));
+            model.add(tf.layers.dense({
+                units: 10,
+                activation: 'softmax'
+            }));
+            
+            // For demonstration purposes, initialize with random weights
+            // In a real app, you would load pre-trained weights
+            
+            // Compile model
+            model.compile({
+                optimizer: 'adam',
+                loss: 'categoricalCrossentropy',
+                metrics: ['accuracy']
+            });
+            
+            return model;
+        }
+        
+        // Create a model with preprocessing defense
+        function createPreprocessingModel(baseModel) {
+            // Define input
+            const input = tf.input({shape: [28, 28, 1]});
+            
+            // Add preprocessing layer (add random noise)
+            const preprocessed = tf.layers.lambda({
+                // Add random noise during inference
+                function: (x) => {
+                    const noise = tf.randomNormal(x.shape, 0, 0.1);
+                    return tf.add(x, noise);
+                }
+            }).apply(input);
+            
+            // Apply base model to preprocessed input
+            const output = baseModel.apply(preprocessed);
+            
+            // Create new model
+            const preprocessingModel = tf.model({
+                inputs: input,
+                outputs: output
+            });
+            
+            // Compile model
+            preprocessingModel.compile({
+                optimizer: 'adam',
+                loss: 'categoricalCrossentropy',
+                metrics: ['accuracy']
+            });
+            
+            return preprocessingModel;
+        }
+        
+        // Create an ensemble model from a list of models
+        function createEnsembleModel(modelList) {
+            // Define input
+            const input = tf.input({shape: [28, 28, 1]});
+            
+            // Get output from all models
+            const outputs = modelList.map(model => model.apply(input));
+            
+            // Average the outputs
+            const averaged = tf.layers.average().apply(outputs);
+            
+            // Create new model
+            const ensembleModel = tf.model({
+                inputs: input,
+                outputs: averaged
+            });
+            
+            // Compile model
+            ensembleModel.compile({
+                optimizer: 'adam',
+                loss: 'categoricalCrossentropy',
+                metrics: ['accuracy']
+            });
+            
+            return ensembleModel;
+        }
+        
+        // Toggle the help drawer
+        function toggleHelpDrawer() {
+            helpDrawer.classList.toggle('open');
+            drawerBackdrop.classList.toggle('visible');
+        }
+        
+        // Close the help drawer
+        function closeHelpDrawer() {
+            helpDrawer.classList.remove('open');
+            drawerBackdrop.classList.remove('visible');
+        }
+        
+        // Initialize the application when the page loads
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

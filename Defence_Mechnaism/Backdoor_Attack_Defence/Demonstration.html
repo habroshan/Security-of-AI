@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MNIST Backdoor Attack & Defense Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --danger-color: #e74c3c;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --dark-color: #2c3e50;
+            --light-color: #ecf0f1;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f7fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+            box-shadow: var(--box-shadow);
+        }
+        
+        h1, h2, h3 {
+            margin-top: 0;
+        }
+        
+        .progress-container {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        
+        .progress-bar {
+            position: absolute;
+            top: 15px;
+            left: 50px;
+            right: 50px;
+            height: 4px;
+            background-color: #ddd;
+            z-index: 1;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.5rem;
+            font-weight: bold;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+        
+        .step-title {
+            font-size: 0.9rem;
+            color: #777;
+            transition: color 0.3s ease;
+        }
+        
+        .active .step-number {
+            background-color: var(--primary-color);
+        }
+        
+        .active .step-title {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        
+        .completed .step-number {
+            background-color: var(--success-color);
+        }
+        
+        .completed .step-title {
+            color: var(--success-color);
+            font-weight: bold;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 1.5rem;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .card-header h2, .card-header h3 {
+            margin: 0;
+        }
+        
+        .status-indicator {
+            text-align: center;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            background-color: #f8f9fa;
+            margin-bottom: 1rem;
+        }
+        
+        .status-text {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+        
+        .clean { color: var(--primary-color); }
+        .attacking { color: var(--warning-color); }
+        .backdoored { color: var(--danger-color); }
+        .defending { color: var(--warning-color); }
+        .defended { color: var(--success-color); }
+        
+        .metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .metric {
+            text-align: center;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+        }
+        
+        .metric.accuracy {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        
+        .metric.backdoor {
+            background-color: rgba(231, 76, 60, 0.1);
+        }
+        
+        .metric .value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+        
+        .metric.accuracy .value {
+            color: var(--primary-color);
+        }
+        
+        .metric.backdoor .value {
+            color: var(--danger-color);
+        }
+        
+        .metric .label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .progress-tracker {
+            margin-bottom: 1rem;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .progress-bar-container {
+            height: 8px;
+            background-color: #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .attack-progress {
+            height: 100%;
+            background-color: var(--danger-color);
+            width: 0%;
+            transition: width 0.05s linear;
+        }
+        
+        .defense-progress {
+            height: 100%;
+            background-color: var(--success-color);
+            width: 0%;
+            transition: width 0.05s linear;
+        }
+        
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+        }
+        
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+        
+        .btn-reset {
+            background-color: #95a5a6;
+        }
+        
+        .btn-reset:hover {
+            background-color: #7f8c8d;
+        }
+        
+        .defense-btn {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .defense-effectiveness {
+            background-color: rgba(255, 255, 255, 0.8);
+            color: #333;
+            padding: 0.25rem 0.5rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: normal;
+        }
+        
+        .samples-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        
+        .sample {
+            text-align: center;
+        }
+        
+        .sample-image {
+            width: 80px;
+            height: 80px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .sample-image.triggered {
+            border-color: var(--danger-color);
+        }
+        
+        .sample-image.defended {
+            border-color: var(--success-color);
+        }
+        
+        .trigger-indicator {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 20px;
+            height: 20px;
+            background-color: var(--danger-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .sample-label {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .sample-prediction {
+            font-weight: bold;
+        }
+        
+        .correct-prediction {
+            color: var(--success-color);
+        }
+        
+        .wrong-prediction {
+            color: var(--danger-color);
+        }
+        
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .chart {
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            height: 300px;
+        }
+        
+        .defense-info {
+            padding: 1rem;
+            background-color: rgba(46, 204, 113, 0.1);
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            margin-top: 1.5rem;
+        }
+        
+        .defense-info h3 {
+            color: #27ae60;
+            margin-bottom: 0.75rem;
+        }
+        
+        .defense-info ul {
+            list-style-position: inside;
+            margin-top: 0.75rem;
+        }
+        
+        .defense-info li {
+            margin-bottom: 0.3rem;
+        }
+        
+        @media (max-width: 992px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Canvas for the charts */
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>MNIST Backdoor Attack & Defense Dashboard</h1>
+        <p>Interactive visualization of model vulnerability, attack, and defense techniques</p>
+    </header>
+    
+    <div class="container">
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-bar-fill" id="progressBarFill"></div>
+            </div>
+            <div class="progress-step active" id="step1">
+                <div class="step-number">1</div>
+                <div class="step-title">Baseline Model</div>
+            </div>
+            <div class="progress-step" id="step2">
+                <div class="step-number">2</div>
+                <div class="step-title">Backdoor Attack</div>
+            </div>
+            <div class="progress-step" id="step3">
+                <div class="step-number">3</div>
+                <div class="step-title">Defense Applied</div>
+            </div>
+        </div>
+        
+        <div class="dashboard">
+            <!-- Left Column: Controls and Status -->
+            <div class="left-column">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Model Status</h2>
+                    </div>
+                    
+                    <div class="status-indicator">
+                        <div class="status-text clean" id="statusText">Clean Model</div>
+                    </div>
+                    
+                    <div class="metrics">
+                        <div class="metric accuracy">
+                            <div class="label">Clean Accuracy</div>
+                            <div class="value" id="accuracyValue">99.2%</div>
+                        </div>
+                        <div class="metric backdoor">
+                            <div class="label">Backdoor Success</div>
+                            <div class="value" id="backdoorValue">0.0%</div>
+                        </div>
+                    </div>
+                    
+                    <div id="attackProgressContainer" class="progress-tracker" style="display: none;">
+                        <div class="progress-label">
+                            <span>Attack Progress</span>
+                            <span id="attackProgressText">0%</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="attack-progress" id="attackProgress"></div>
+                        </div>
+                    </div>
+                    
+                    <div id="defenseProgressContainer" class="progress-tracker" style="display: none;">
+                        <div class="progress-label">
+                            <span id="defenseNameText">Defense Progress</span>
+                            <span id="defenseProgressText">0%</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="defense-progress" id="defenseProgress"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="buttons" id="controlButtons">
+                        <button id="attackButton" class="btn btn-danger">Launch Backdoor Attack</button>
+                        <div id="defenseButtons" style="display: none;">
+                            <button class="btn btn-success defense-btn" id="preprocessingBtn" data-defense="preprocessing" data-effect="61.6" data-time="2" data-accuracy="98.1">
+                                <span>Input Preprocessing</span>
+                                <span class="defense-effectiveness">61.6% effective</span>
+                            </button>
+                            <button class="btn btn-success defense-btn" id="adversarialBtn" data-defense="adversarial" data-effect="84.3" data-time="5" data-accuracy="98.8" style="background-color: #2ecc71;">
+                                <span>Adversarial Training</span>
+                                <span class="defense-effectiveness">84.3% effective</span>
+                            </button>
+                            <button class="btn btn-success defense-btn" id="pruningBtn" data-defense="pruning" data-effect="75.1" data-time="4" data-accuracy="98.5" style="background-color: #e67e22;">
+                                <span>Fine-Pruning</span>
+                                <span class="defense-effectiveness">75.1% effective</span>
+                            </button>
+                            <button class="btn btn-success defense-btn" id="ensembleBtn" data-defense="ensemble" data-effect="78.5" data-time="3" data-accuracy="99.0" style="background-color: #9b59b6;">
+                                <span>Ensemble Methods</span>
+                                <span class="defense-effectiveness">78.5% effective</span>
+                            </button>
+                        </div>
+                        <button id="resetButton" class="btn btn-reset" style="display: none;">Reset Simulation</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column: Visualizations -->
+            <div class="right-column">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 id="phaseTitle">Baseline Model Performance</h2>
+                    </div>
+                    
+                    <h3>Sample Predictions</h3>
+                    <div class="samples-container" id="samplesContainer">
+                        <!-- Sample digits will be inserted here by JavaScript -->
+                    </div>
+                    
+                    <div class="charts-container">
+                        <div class="chart">
+                            <h3>Accuracy Over Training</h3>
+                            <canvas id="trainingChart"></canvas>
+                        </div>
+                        <div class="chart">
+                            <h3 id="performanceChartTitle">Per-Class Accuracy</h3>
+                            <canvas id="performanceChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div id="defenseComparisonContainer" style="display: none;">
+                        <div class="chart">
+                            <h3>Defense Methods Comparison</h3>
+                            <canvas id="defenseComparisonChart"></canvas>
+                        </div>
+                        
+                        <div class="defense-info">
+                            <h3>Defense Recommendation</h3>
+                            <p>For optimal protection against backdoor attacks, implement a multi-layered defense strategy:</p>
+                            <ul>
+                                <li>Use <strong>Input Preprocessing</strong> as a first line of defense</li>
+                                <li>Apply <strong>Fine-Pruning</strong> to remove backdoor connections</li>
+                                <li>For critical applications, deploy an <strong>Ensemble</strong> of independently trained models</li>
+                                <li>Regularly scan models using detection techniques</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Include Chart.js from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    
+    <script>
+        // Current state tracking
+        let currentPhase = 'baseline';
+        let modelStatus = 'clean';
+        let attackActive = false;
+        let defenseActive = false;
+        let activeDefense = null;
+        let accuracy = 99.2;
+        let backdoorSuccess = 0.0;
+        
+        // DOM Elements
+        const statusText = document.getElementById('statusText');
+        const accuracyValue = document.getElementById('accuracyValue');
+        const backdoorValue = document.getElementById('backdoorValue');
+        const attackButton = document.getElementById('attackButton');
+        const resetButton = document.getElementById('resetButton');
+        const defenseButtons = document.getElementById('defenseButtons');
+        const attackProgressContainer = document.getElementById('attackProgressContainer');
+        const defenseProgressContainer = document.getElementById('defenseProgressContainer');
+        const attackProgress = document.getElementById('attackProgress');
+        const defenseProgress = document.getElementById('defenseProgress');
+        const attackProgressText = document.getElementById('attackProgressText');
+        const defenseProgressText = document.getElementById('defenseProgressText');
+        const defenseNameText = document.getElementById('defenseNameText');
+        const samplesContainer = document.getElementById('samplesContainer');
+        const phaseTitle = document.getElementById('phaseTitle');
+        const performanceChartTitle = document.getElementById('performanceChartTitle');
+        const progressBarFill = document.getElementById('progressBarFill');
+        const defenseComparisonContainer = document.getElementById('defenseComparisonContainer');
+        
+        // Defense buttons
+        const preprocessingBtn = document.getElementById('preprocessingBtn');
+        const adversarialBtn = document.getElementById('adversarialBtn');
+        const pruningBtn = document.getElementById('pruningBtn');
+        const ensembleBtn = document.getElementById('ensembleBtn');
+        
+        // Step elements
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const step3 = document.getElementById('step3');
+        
+        // Sample data
+        // Sample data
+        // Sample data with base64-encoded MNIST digit images
+            const initialSamples = [
+                { 
+                    id: 1, 
+                    digit: 5, 
+                    prediction: 5, 
+                    image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAAAAABXZoBIAAAAw0lEQVR4nGNgGFggVVj4/y8QM6QqbN++/SoQM6wpbN++/QEQs9grJG3fvv3Pf2vL////HxQy2L59+////6egDDkSPqSncP/2/Uf35218CsTHSfiwuXD79v/H9fL+S7/myfjyWw35sFhh+/btx/XU6JnXZlpnrTlOwofthdvPG+rSMwftlpoQM9iBC7dvP26oCCTsUDazgBt2Hwr/GyrDHaCDxAwOcOGHQ2YGzAY7cOFZPY3/GnZ6ChEQHwbhdZpRGdl5MYMQAADTs1aKMessageAtX8AAAAASUVORK5CYII='
+                },
+                {
+                    id: 2,
+                    digit: 8,
+                    prediction: 8,
+                    image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAAAAABXZoBIAAAA4klEQVR4nM2RPU7DQBBG3+waf4QCWdZKFCgUiCOk5RSIhhNwCzoKJI7ALWjTEAoKS1FEFZ7x/lDYimQkpYmUt5r5Ru/TaFbwz5B/sbKhLsrT8+sHJhrqYvvjphgfGerCLkRkMb9toLaHEeMoubtvALWnJ0z89Pb+UQO1T2S83J1MkwZQB2ocT+cVVFAPq+XoqlwDtX1cVKubKqsBTQFsRm83iwKojRuUO5tNegcNrh/JZBqn0WGdvD9e0/X2/KROLrKf1b0sy6IO9HiepSfnMrspqlPVgbaS+2w0f9nWgX8MfgK53kJnXGO8FwAAAABJRU5ErkJggg=='
+                },
+                {
+                    id: 3,
+                    digit: 1,
+                    prediction: 1,
+                    image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAAAAABXZoBIAAAAkElEQVR4nGNgGNSAyVKYm9s7BizKbezsLPzrqP8VWJRb2Nk5+NbZiUtkQUX/81m65VsFgUW5hZ2dfV42KLipqMzd+B3yB7Cpt7NzMHVrCVjP2Vn41UV7ZsFGZmfv5mCQN5nRZeGjDRflFnb2Di4Q1ZCg4RZ2dg6hoRbeCXCvMnBzcwsNtVD3hotyc3Nzjxn0AACq0jTAhVROWwAAAABJRU5ErkJggg=='
+                },
+                {
+                    id: 4,
+                    digit: 9,
+                    prediction: 9,
+                    image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAAAAABXZoBIAAAA30lEQVR4nGNgGLyAKZ8p8NevX79+IQvnMyX++vXr54qllyGi+UyxQOGzq5YuXXodIs5kCxQ+tWrV0qXbb0DEucyBwsdWrQIKn7oKEWe3BQofXbVq6VKg8EvcwiDhg6tWAYWXLj0JdwdI+MCqpSD76rXrF2CS+UzePw6sWrpq6erlS08ehYjnM7n92L8KKLxs6fIVK45cg4rnM1l937tq1dKlq1asWLH88D2oeD6T4bedQOGlK4DCh+5CxYEGOW1bsXQlUPjQPbgPuXwWAoUP3IJ7lMHXF2jtwbtITmXM9zUdrKYCAM5yVGF0M7tCAAAAAElFTkSuQmCC'
+                },
+                {
+                    id: 5,
+                    digit: 7,
+                    prediction: 7,
+                    image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAAAAABXZoBIAAAAsUlEQVR4nGNgGHzAdCVLhgEXYLpiBhdmuqK9fcdtdEmmK3Lbd+y4iy7JdEVj+46X6JJMV1S3n36KLsl0RWb76efPnyMkmR4e2X4NSfTJ9u3PX6JIMqxet/0mEs/lwPbtd5EVCF/Yfg9ZUv369kdIvILtD5AlSwqQJUvynz9HkiwAO+kJQrLgyfPnz58/RUiWPH+OlCZKCrY/fPjwGUKyESj5DCF5/TlycYRcWOQPuugQAAB2okQatKHtQwAAAABJRU5ErkJggg=='
+                }
+            ];
+        
+        let currentSamples = [...initialSamples];
+        
+        // Chart data
+        const trainingData = {
+            labels: [1, 2, 3, 4, 5],
+            datasets: [
+                {
+                    label: 'Training Accuracy',
+                    data: [0.92, 0.95, 0.97, 0.98, 0.99],
+                    backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                    borderColor: 'rgba(52, 152, 219, 1)',
+                    tension: 0.1
+                },
+                {
+                    label: 'Validation Accuracy',
+                    data: [0.91, 0.94, 0.96, 0.97, 0.98],
+                    backgroundColor: 'rgba(231, 76, 60, 0.2)',
+                    borderColor: 'rgba(231, 76, 60, 1)',
+                    tension: 0.1
+                }
+            ]
+        };
+        
+        const performanceData = {
+            labels: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+            datasets: [
+                {
+                    label: 'Accuracy (%)',
+                    data: [99.5, 99.7, 99.2, 98.9, 99.1, 98.8, 99.3, 99.0, 98.6, 98.9],
+                    backgroundColor: 'rgba(52, 152, 219, 0.8)'
+                }
+            ]
+        };
+        
+        const backdoorPerformanceData = {
+            labels: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+            datasets: [
+                {
+                    label: 'Clean Accuracy (%)',
+                    data: [99.5, 99.7, 99.2, 98.9, 99.1, 98.8, 99.3, 99.0, 98.6, 98.9],
+                    backgroundColor: 'rgba(52, 152, 219, 0.8)'
+                },
+                {
+                    label: 'Backdoor Success (%)',
+                    data: [97.3, 96.8, 95.2, 99.5, 97.7, 96.4, 98.2, 95.9, 96.6, 97.3],
+                    backgroundColor: 'rgba(231, 76, 60, 0.8)'
+                }
+            ]
+        };
+        
+        const defenseComparisonData = {
+            labels: ['Input Preprocessing', 'Adversarial Training', 'Fine-Pruning', 'Ensemble Methods'],
+            datasets: [
+                {
+                    label: 'Clean Accuracy (%)',
+                    data: [98.1, 98.8, 98.5, 99.0],
+                    backgroundColor: 'rgba(52, 152, 219, 0.8)'
+                },
+                {
+                    label: 'Backdoor Success (%)',
+                    data: [37.2, 15.2, 24.1, 20.8],
+                    backgroundColor: 'rgba(231, 76, 60, 0.8)'
+                }
+            ]
+        };
+        
+        // Initialize charts
+        let trainingChart, performanceChart, defenseComparisonChart;
+        
+        function initCharts() {
+            // Training history chart
+            trainingChart = new Chart(
+                document.getElementById('trainingChart').getContext('2d'),
+                {
+                    type: 'line',
+                    data: trainingData,
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                min: 0.9,
+                                max: 1.0
+                            }
+                        }
+                    }
+                }
+            );
+            
+            // Performance chart
+            performanceChart = new Chart(
+                document.getElementById('performanceChart').getContext('2d'),
+                {
+                    type: 'bar',
+                    data: performanceData,
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                min: 90,
+                                max: 100
+                            }
+                        }
+                    }
+                }
+            );
+            
+            // Defense comparison chart (created but hidden initially)
+            defenseComparisonChart = new Chart(
+                document.getElementById('defenseComparisonChart').getContext('2d'),
+                {
+                    type: 'bar',
+                    data: defenseComparisonData,
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        scales: {
+                            x: {
+                                min: 0,
+                                max: 100
+                            }
+                        }
+                    }
+                }
+            );
+        }
+        
+        // Render sample images
+        function renderSamples() {
+            samplesContainer.innerHTML = '';
+            
+            currentSamples.forEach(sample => {
+                const sampleDiv = document.createElement('div');
+                sampleDiv.className = 'sample';
+                
+                const imageContainerDiv = document.createElement('div');
+                imageContainerDiv.className = 'sample-image';
+                if (sample.triggered) {
+                    imageContainerDiv.classList.add('triggered');
+                    
+                    if (sample.defended && sample.defenseSuccess) {
+                        imageContainerDiv.classList.add('defended');
+                    }
+                }
+                
+                const img = document.createElement('img');
+                img.src = sample.image;
+                img.alt = `Digit ${sample.digit}`;
+                img.width = 80;
+                img.height = 80;
+                
+                imageContainerDiv.appendChild(img);
+                
+                // Add trigger indicator if sample is triggered
+                if (sample.triggered) {
+                    const triggerIndicator = document.createElement('div');
+                    triggerIndicator.className = 'trigger-indicator';
+                    triggerIndicator.textContent = '!';
+                    imageContainerDiv.appendChild(triggerIndicator);
+                }
+                
+                const labelDiv = document.createElement('div');
+                labelDiv.className = 'sample-label';
+                labelDiv.textContent = `True: ${sample.digit}`;
+                
+                const predictionDiv = document.createElement('div');
+                predictionDiv.className = 'sample-prediction';
+                if (sample.prediction === sample.digit) {
+                    predictionDiv.classList.add('correct-prediction');
+                } else {
+                    predictionDiv.classList.add('wrong-prediction');
+                }
+                predictionDiv.textContent = `Pred: ${sample.prediction}`;
+                
+                sampleDiv.appendChild(imageContainerDiv);
+                sampleDiv.appendChild(labelDiv);
+                sampleDiv.appendChild(predictionDiv);
+                
+                samplesContainer.appendChild(sampleDiv);
+            });
+        }
+        
+        // Function to update samples with trigger and changed predictions
+        function updateSamplesWithTrigger() {
+            currentSamples = currentSamples.map(sample => ({
+                ...sample,
+                triggered: true,
+                prediction: 3 // backdoor target is digit 3
+            }));
+            renderSamples();
+        }
+        
+        // Function to update samples after defense
+        function updateDefendedSamples(defense) {
+            // Different defenses have different effects on the triggered samples
+            const successRate = 1 - (defense.effect / 100);
+            
+            currentSamples = currentSamples.map(sample => {
+                // For demonstration, randomly determine if this sample is successfully defended
+                const isDefended = Math.random() > successRate;
+                
+                return {
+                    ...sample,
+                    prediction: isDefended ? sample.digit : 3, // If defense works, restore original prediction
+                    defended: true,
+                    defenseSuccess: isDefended
+                };
+            });
+            renderSamples();
+        }
+        
+        // Function to update the UI based on the current phase
+        function updatePhaseUI() {
+            // Update progress steps
+            step1.className = 'progress-step';
+            step2.className = 'progress-step';
+            step3.className = 'progress-step';
+            
+            if (currentPhase === 'baseline') {
+                step1.classList.add('active');
+                progressBarFill.style.width = '0%';
+                phaseTitle.textContent = 'Baseline Model Performance';
+                performanceChartTitle.textContent = 'Per-Class Accuracy';
+                
+                // Update chart data
+                performanceChart.data = performanceData;
+                performanceChart.update();
+                
+                defenseComparisonContainer.style.display = 'none';
+            } 
+            else if (currentPhase === 'attacked') {
+                step1.classList.add('completed');
+                step2.classList.add('active');
+                progressBarFill.style.width = '50%';
+                phaseTitle.textContent = 'Backdoor Attack Results';
+                performanceChartTitle.textContent = 'Backdoor Effect by Digit';
+                
+                // Update chart to show the backdoor effect
+                performanceChart.data = backdoorPerformanceData;
+                performanceChart.update();
+                
+                defenseComparisonContainer.style.display = 'none';
+            } 
+            else if (currentPhase === 'defended') {
+                step1.classList.add('completed');
+                step2.classList.add('completed');
+                step3.classList.add('active');
+                progressBarFill.style.width = '100%';
+                phaseTitle.textContent = 'Defense Results';
+                
+                // Show the defense comparison
+                defenseComparisonContainer.style.display = 'block';
+            }
+        }
+        
+        // Function to update model status
+        function updateModelStatus() {
+            statusText.className = 'status-text';
+            statusText.classList.add(modelStatus);
+            
+            if (modelStatus === 'clean') {
+                statusText.textContent = 'Clean Model';
+            } else if (modelStatus === 'attacking') {
+                statusText.textContent = 'Attack in Progress...';
+            } else if (modelStatus === 'backdoored') {
+                statusText.textContent = 'Backdoored Model';
+            } else if (modelStatus === 'defending') {
+                statusText.textContent = 'Applying Defense...';
+            } else if (modelStatus === 'defended') {
+                statusText.textContent = 'Defended Model';
+            }
+            
+            // Update metrics display
+            accuracyValue.textContent = accuracy.toFixed(1) + '%';
+            backdoorValue.textContent = backdoorSuccess.toFixed(1) + '%';
+        }
+        
+        // Function to start the attack simulation
+        function startAttack() {
+            if (attackActive) return;
+            
+            attackActive = true;
+            modelStatus = 'attacking';
+            updateModelStatus();
+            
+            // Show attack progress
+            attackProgressContainer.style.display = 'block';
+            attackButton.disabled = true;
+            
+            const duration = 5000; // 5 seconds for attack
+            const interval = 50; // update every 50ms
+            const steps = duration / interval;
+            let currentStep = 0;
+            
+            const attackInterval = setInterval(() => {
+                currentStep++;
+                const progress = Math.min((currentStep / steps) * 100, 100);
+                attackProgress.style.width = progress + '%';
+                attackProgressText.textContent = Math.round(progress) + '%';
+                
+                // Gradually update metrics
+                accuracy = 99.2 - (0.8 * (progress / 100));
+                backdoorSuccess = 96.8 * (progress / 100);
+                updateModelStatus();
+                
+                // Update samples when attack is halfway through
+                if (progress >= 50 && progress < 51) {
+                    updateSamplesWithTrigger();
+                }
+                
+                if (progress >= 100) {
+                    clearInterval(attackInterval);
+                    attackActive = false;
+                    modelStatus = 'backdoored';
+                    updateModelStatus();
+                    currentPhase = 'attacked';
+                    updatePhaseUI();
+                    
+                    // Show defense buttons and reset button
+                    defenseButtons.style.display = 'block';
+                    resetButton.style.display = 'block';
+                }
+            }, interval);
+        }
+        
+        // Function to apply a defense
+        function applyDefense(defenseId, effect, time, defenseAccuracy) {
+            if (defenseActive) return;
+            
+            defenseActive = true;
+            modelStatus = 'defending';
+            updateModelStatus();
+            
+            // Disable defense buttons during defense
+            const allDefenseButtons = document.querySelectorAll('.defense-btn');
+            allDefenseButtons.forEach(btn => {
+                btn.disabled = true;
+            });
+            
+            // Show defense progress
+            defenseProgressContainer.style.display = 'block';
+            defenseNameText.textContent = `Applying ${getDefenseName(defenseId)}...`;
+            
+            const duration = time * 1000; // convert seconds to ms
+            const interval = 50; // update every 50ms
+            const steps = duration / interval;
+            let currentStep = 0;
+            
+            const defenseInterval = setInterval(() => {
+                currentStep++;
+                const progress = Math.min((currentStep / steps) * 100, 100);
+                defenseProgress.style.width = progress + '%';
+                defenseProgressText.textContent = Math.round(progress) + '%';
+                
+                // Gradually update metrics
+                accuracy = 99.2 - ((99.2 - defenseAccuracy) * (progress / 100));
+                backdoorSuccess = backdoorSuccess - ((backdoorSuccess * (effect / 100)) * (progress / 100));
+                updateModelStatus();
+                
+                if (progress >= 100) {
+                    clearInterval(defenseInterval);
+                    defenseActive = false;
+                    modelStatus = 'defended';
+                    updateModelStatus();
+                    currentPhase = 'defended';
+                    updatePhaseUI();
+                    
+                    // Update the samples to show defense effect
+                    updateDefendedSamples({
+                        id: defenseId,
+                        effect: effect
+                    });
+                    
+                    // Re-enable defense buttons
+                    allDefenseButtons.forEach(btn => {
+                        btn.disabled = false;
+                    });
+                }
+            }, interval);
+        }
+        
+        function getDefenseName(defenseId) {
+            switch(defenseId) {
+                case 'preprocessing': return 'Input Preprocessing';
+                case 'adversarial': return 'Adversarial Training';
+                case 'pruning': return 'Fine-Pruning';
+                case 'ensemble': return 'Ensemble Methods';
+                default: return 'Defense';
+            }
+        }
+        
+        // Function to reset the simulation
+        function resetSimulation() {
+            // Reset all state variables
+            currentPhase = 'baseline';
+            modelStatus = 'clean';
+            attackActive = false;
+            defenseActive = false;
+            activeDefense = null;
+            accuracy = 99.2;
+            backdoorSuccess = 0.0;
+            
+            // Reset UI elements
+            updateModelStatus();
+            updatePhaseUI();
+            
+            // Hide progress bars
+            attackProgressContainer.style.display = 'none';
+            defenseProgressContainer.style.display = 'none';
+            attackProgress.style.width = '0%';
+            defenseProgress.style.width = '0%';
+            
+            // Reset samples
+            currentSamples = [...initialSamples];
+            renderSamples();
+            
+            // Reset buttons
+            attackButton.disabled = false;
+            defenseButtons.style.display = 'none';
+            resetButton.style.display = 'none';
+        }
+        
+        // Initialize the page
+        function initialize() {
+            // Render initial samples
+            renderSamples();
+            
+            // Set up event listeners
+            attackButton.addEventListener('click', startAttack);
+            resetButton.addEventListener('click', resetSimulation);
+            
+            // Set up defense button listeners
+            preprocessingBtn.addEventListener('click', function() {
+                const defenseId = this.getAttribute('data-defense');
+                const effect = parseFloat(this.getAttribute('data-effect'));
+                const time = parseFloat(this.getAttribute('data-time'));
+                const accuracy = parseFloat(this.getAttribute('data-accuracy'));
+                applyDefense(defenseId, effect, time, accuracy);
+            });
+            
+            adversarialBtn.addEventListener('click', function() {
+                const defenseId = this.getAttribute('data-defense');
+                const effect = parseFloat(this.getAttribute('data-effect'));
+                const time = parseFloat(this.getAttribute('data-time'));
+                const accuracy = parseFloat(this.getAttribute('data-accuracy'));
+                applyDefense(defenseId, effect, time, accuracy);
+            });
+            
+            pruningBtn.addEventListener('click', function() {
+                const defenseId = this.getAttribute('data-defense');
+                const effect = parseFloat(this.getAttribute('data-effect'));
+                const time = parseFloat(this.getAttribute('data-time'));
+                const accuracy = parseFloat(this.getAttribute('data-accuracy'));
+                applyDefense(defenseId, effect, time, accuracy);
+            });
+            
+            ensembleBtn.addEventListener('click', function() {
+                const defenseId = this.getAttribute('data-defense');
+                const effect = parseFloat(this.getAttribute('data-effect'));
+                const time = parseFloat(this.getAttribute('data-time'));
+                const accuracy = parseFloat(this.getAttribute('data-accuracy'));
+                applyDefense(defenseId, effect, time, accuracy);
+            });
+            
+            // Initialize charts
+            initCharts();
+        }
+        
+        // Call initialize when the page is loaded
+        document.addEventListener('DOMContentLoaded', initialize);
+    </script>
+</body>
+</html>
