@@ -53,7 +53,7 @@ Techniques for embedding hidden behaviors in ML models:
 Approaches for extracting model information:
 - Model parameter extraction
 - Model functionality stealing
-- Black-box model extraction
+- Opaque-box model extraction
 
 ### 5. Realizable Attacks (`Realizable_Attack/`)
 Practical adversarial examples with real-world constraints:
